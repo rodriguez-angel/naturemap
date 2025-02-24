@@ -17,6 +17,25 @@
         height: 100%;
         width: 100%;
       }
+    
+      .addRecordBtn {
+        position: absolute;
+        z-index: 10;
+        bottom: 10px;
+        right: 10px;
+        background-color: #0079c1;
+        color: white;
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+    
+      .addRecordBtn:hover {
+        background-color: #005a87;
+      }
     </style>
 
     <!-- CSS file and libraries -->
@@ -84,6 +103,10 @@
     </script>
   </head>
   <body>
+    <!-- Button to add a new record -->
+    <a href="https://arcg.is/19XrCu2" target="_blank" class="addRecordBtn">Add Record</a>
+    
+    <!-- Div element to hold the map view -->
     <div id="viewDiv"></div>
   </body>
 </html>
