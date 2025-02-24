@@ -17,7 +17,7 @@
          height: 100%;
          width: 100%;
         }
-       </style>
+    </style>
 
     <!-- CSS file and libraries -->
     <link rel="stylesheet" href="https://js.arcgis.com/4.32/esri/themes/light/main.css" />
@@ -25,18 +25,21 @@
 
     <!-- Loading modules -->
     <script>
-        require(["esri/config", "esri/Map", "esri/views/MapView" ], (esriConfig, Map, MapView) => {
+        require(["esri/config", "esri/Map", "esri/views/MapView"], (esriConfig, Map, MapView) => {
         
             esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurMDO2Lvg3fqfK_WEnH5iFTMBraaeXiSHJGRbnr1Zs4Isr4QgtEWFLCgjEyJUqKPiF1twAE7x6mEbufhgGS8kDfdHZrm-MxCYabUC4R4l1qsZ41mzL6Or0hSE4dkXf_yST7bEx29lJkvmLZa5L6lxxauEogtg-aafqVSunqkSD9MFqBnsg6KGrMADv7SZEjDdrTjOkdGIkev0d6XLanocxs2I9M7C0otsi3fKjt2gtQYJAT1_mPb6eiGn";
 
-    // Defining basemap
+            // Defining basemap
             const map = new Map({
                 basemap: "satellite"
             });
         
             const view = new MapView({
                 container: "viewDiv", // Reference to the DOM node that will contain the view
-                map: map // References the map object
+                map: map, // References the map object
+                // Ensure the view takes up the full height and width of the container
+                height: "100%",
+                width: "100%"
             });
         });
     </script>
