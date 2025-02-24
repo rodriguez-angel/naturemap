@@ -42,6 +42,14 @@
           height: "100%",
           width: "100%"
         });
+        
+        // Create featurelayer from feature service 
+        const layer = new FeatureLayer({ 
+        // URL to the service 
+            url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer"
+        });
+
+        map.add(layer);
 
         const locateBtn = new Locate({
           view: view
@@ -59,8 +67,8 @@
         // Add the search widget to the top right corner of the view
         view.ui.add(searchWidget, {
           position: "top-right",
-          searchEnabled : true,
           locationEnabled: true
+        
         });
       });
     </script>
