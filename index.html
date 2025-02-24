@@ -36,12 +36,13 @@
         
             const view = new MapView({
                 container: "viewDiv", // Reference to the DOM node that will contain the view
-                map: map, // References the map object
+                map: map,// References the map object
+                center: [30.4383, -84.2807], // Tallahassee, Florida coordinates
                 zoom: 3,
                 // Ensure the view takes up the full height and width of the container
                 height: "100%",
                 width: "100%",
-                center: [30.4383, -84.2807] // Tallahassee, Florida coordinates
+                
             });
         
             console.log("Map center coordinates:", view.center);
