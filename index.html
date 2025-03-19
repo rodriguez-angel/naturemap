@@ -39,7 +39,7 @@
       #menuContent {
         position: fixed;
         top: 0;
-        left: -295px; /* Fully hidden off-screen */
+        left: -295qpx; /* Fully hidden off-screen */
         width: 250px;
         height: 100%;
         background: white;
@@ -142,7 +142,13 @@
         const popupParks = {
           title: "{NAME}", // Display the name of the park
           collapseEnabled: true, // Allow collapsing the popup
-          content: "Type of Greenspace: {FEATTYPE} <br> Size in Square Mileage: {SQMI}" // Display additional attributes
+          content: `
+            <p>Type of Greenspace: {FEATTYPE}</p>
+            <p>Size in Square Mileage: {SQMI}</p>
+            <button id="bookmarkButton" style="background: #0079c1; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
+              Add to Bookmarks
+            </button>
+          ` // Add a button for bookmarking
         };
 
         // Define a renderer for the parks layer
