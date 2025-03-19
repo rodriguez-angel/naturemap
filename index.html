@@ -6,7 +6,7 @@
     <!-- sets the viewport properties for the web page -->
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
     
-    <title>Data Collector for AGOL</title>
+    <title>NatureMap</title>
     
     <style>
       html,
@@ -78,6 +78,22 @@
 
         // Add the feature layer to the map
         map.add(layer);
+
+        // Create a feature layer for parks (polygon layer)
+        const parksLayer = new FeatureLayer({
+          url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Parks/FeatureServer",
+          outFields: ["*"], // Retrieve all fields for use in pop-ups or filtering
+          popupTemplate: {
+            title: "{NAME}", // Replace with the field name for the park's name
+            content: `
+              <p><b>Object ID:</b> {OBJECTID}</p>
+              <p><b>Description:</b> {FEATTYPE}</p> <!-- Replace with the actual field name -->
+            `
+          }
+        });
+
+        // Add the parks layer to the map
+        map.add(parksLayer);
 
         // Create the Locate widget
         const locateBtn = new Locate({
