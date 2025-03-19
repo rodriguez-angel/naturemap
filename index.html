@@ -142,13 +142,37 @@
         const popupParks = {
           title: "{NAME}", // Display the name of the park
           collapseEnabled: true, // Allow collapsing the popup
-          content: `
-            <p>Type of Greenspace: {FEATTYPE}</p>
-            <p>Size in Square Mileage: {SQMI}</p>
-            <button id="bookmarkButton" style="background: #0079c1; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">
-              Add to Bookmarks
-            </button>
-          ` // Add a button for bookmarking
+          content: (feature) => {
+            // Dynamically generate the popup content
+            const attributes = feature.graphic.attributes;
+            const container = document.createElement("div");
+
+            // Add the greenspace type and size
+            container.innerHTML = `
+              <p>Type of Greenspace: ${attributes.FEATTYPE}</p>
+              <p>Size in Square Mileage: ${attributes.SQMI}</p>
+            `;
+
+            // Create the "Add to Bookmarks" button
+            const bookmarkButton = document.createElement("button");
+            bookmarkButton.textContent = "Add to Bookmarks";
+            bookmarkButton.style.background = "#0079c1";
+            bookmarkButton.style.color = "white";
+            bookmarkButton.style.border = "none";
+            bookmarkButton.style.padding = "5px 10px";
+            bookmarkButton.style.borderRadius = "5px";
+            bookmarkButton.style.cursor = "pointer";
+
+            // Add a click event listener to the button
+            bookmarkButton.addEventListener("click", () => {
+              alert(`Bookmarked: ${attributes.NAME}`);
+            });
+
+            // Append the button to the container
+            container.appendChild(bookmarkButton);
+
+            return container; // Return the container as the popup content
+          },
         };
 
         // Define a renderer for the parks layer
