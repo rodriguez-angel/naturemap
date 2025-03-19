@@ -80,13 +80,27 @@
         const popupParks = {
           "title": "Park Test",
           "content": "<b>Name:</b> {NAME}"
-        }
-        
+        };
+
+        // Define a renderer for the parks layer
+        const parksRenderer = {
+          type: "simple", // Simple renderer
+          symbol: {
+            type: "simple-fill", // Fill symbol for polygons
+            color: [0, 128, 0, 0.5], // Green with 50% transparency
+            outline: {
+              color: [0, 0, 0, 0.8], // Black outline
+              width: 1
+            }
+          }
+        };
+
         // Create a feature layer for parks (polygon layer)
         const parksLayer = new FeatureLayer({
           url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Parks/FeatureServer",
           outFields: ["*"], // Retrieve all fields for use in pop-ups or filtering
-          popupTemplate: popupParks
+          popupTemplate: popupParks,
+          renderer: parksRenderer // Apply the renderer to the parks layer
         });
 
         // Debugging: Check if the layer loads
