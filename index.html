@@ -111,24 +111,7 @@
           url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/MyData/FeatureServer",
           outFields: ["*"], // Retrieve all fields for use in pop-ups or filtering
           popupTemplate: popupParks, // Apply the popup template
-          renderer: parksRenderer, // Apply the renderer to the parks layer
-          labelingInfo: [
-            {
-              symbol: {
-                type: "text", // Label type
-                color: "black", // Text color
-                font: {
-                  size: 12, // Font size
-                  family: "Arial", // Font family
-                  weight: "bold" // Font weight
-                }
-              },
-              labelPlacement: "above-center", // Position of the label relative to the feature
-              labelExpressionInfo: {
-                expression: "$feature.NAME" // Field to display as the label
-              }
-            }
-          ]
+          renderer: parksRenderer // Apply the renderer to the parks layer
         });
 
         // Debugging: Check if the layer loads successfully
