@@ -39,7 +39,7 @@
       #menuContent {
         position: fixed;
         top: 0;
-        left: -295qpx; /* Fully hidden off-screen */
+        left: -295px; /* Fully hidden off-screen */
         width: 250px;
         height: 100%;
         background: white;
@@ -76,6 +76,53 @@
         margin-bottom: 20px;
       }
 
+      /* Bookmarks Screen */
+      #bookmarksScreen {
+        position: fixed;
+        top: 0;
+        right: -100%; /* Fully hidden off-screen */
+        width: 100%;
+        height: 100%;
+        background: white;
+        padding: 20px;
+        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+        transition: right 0.3s ease; /* Smooth sliding effect */
+        z-index: 1001; /* Ensure it appears above other elements */
+      }
+
+      #bookmarksScreen h2 {
+        margin-top: 0;
+      }
+
+      #bookmarksScreen ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      #bookmarksScreen ul li {
+        margin: 15px 0;
+      }
+
+      #bookmarksScreen ul li button {
+        margin-top: 5px;
+        background: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      #closeBookmarksButton {
+        background: #0079c1;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
+
       /* Style the popup's main container */
       .esri-popup__main-container {
         border-radius: 10px !important; /* Round the corners */
@@ -92,11 +139,18 @@
       <button id="menuButton">☰ Menu</button>
       <div id="menuContent">
         <button id="closeMenuButton">Close</button>
-        <ul id="bookmarksList">
+        <ul>
           <li><a href="#bookmarks">Bookmarks</a></li>
           <!-- Add more menu items here -->
         </ul>
       </div>
+    </div>
+
+    <!-- Bookmarks Screen -->
+    <div id="bookmarksScreen">
+      <button id="closeBookmarksButton">Back</button>
+      <h2>Bookmarked Locations</h2>
+      <ul id="bookmarksList"></ul> <!-- List to display bookmarks -->
     </div>
 
     <!-- Div element to hold the map view -->
@@ -106,7 +160,7 @@
       // Array to store bookmarks
       const bookmarks = [];
 
-      // Function to update the bookmarks list in the menu
+      // Function to update the bookmarks list in the bookmarks screen
       function updateBookmarksList() {
         const bookmarksList = document.getElementById("bookmarksList");
         bookmarksList.innerHTML = ""; // Clear the list
@@ -117,9 +171,7 @@
             <strong>${bookmark.name}</strong><br>
             Type: ${bookmark.type}<br>
             Size: ${bookmark.size} sq mi
-            <button style="margin-top: 5px; background: #ff4d4d; color: white; border: none; padding: 5px; border-radius: 5px; cursor: pointer;" onclick="removeBookmark(${index})">
-              Remove
-            </button>
+            <button onclick="removeBookmark(${index})">Remove</button>
           `;
           bookmarksList.appendChild(listItem);
         });
@@ -128,8 +180,33 @@
       // Function to remove a bookmark
       function removeBookmark(index) {
         bookmarks.splice(index, 1); // Remove the bookmark from the array
-        updateBookmarksList(); // Update the list in the menu
+        updateBookmarksList(); // Update the list in the bookmarks screen
       }
+
+      // Get references to the bookmarks screen and its close button
+      const bookmarksScreen = document.getElementById("bookmarksScreen");
+      const closeBookmarksButton = document.getElementById("closeBookmarksButton");
+
+      // Function to open the bookmarks screen
+      function openBookmarksScreen() {
+        bookmarksScreen.style.right = "0"; // Slide in the bookmarks screen
+        menuContent.style.left = "-295px"; // Hide the burger menu
+      }
+
+      // Function to close the bookmarks screen and return to the burger menu
+      function closeBookmarksScreen() {
+        bookmarksScreen.style.right = "-100%"; // Slide out the bookmarks screen
+        menuContent.style.left = "0px"; // Show the burger menu
+      }
+
+      // Attach event listener to the "Bookmarks" link in the burger menu
+      document.querySelector('a[href="#bookmarks"]').addEventListener("click", (e) => {
+        e.preventDefault(); // Prevent default link behavior
+        openBookmarksScreen(); // Open the bookmarks screen
+      });
+
+      // Attach event listener to the close button in the bookmarks screen
+      closeBookmarksButton.addEventListener("click", closeBookmarksScreen);
 
       // Load ArcGIS modules
       require([
