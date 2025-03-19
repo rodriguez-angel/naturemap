@@ -39,7 +39,7 @@
       #menuContent {
         position: fixed;
         top: 0;
-        left: -250px; /* Initially hidden off-screen */
+        left: -260px; /* Fully hidden off-screen */
         width: 250px;
         height: 100%;
         background: white;
@@ -65,6 +65,17 @@
         font-weight: bold;
       }
 
+      /* Close button inside the menu */
+      #closeMenuButton {
+        background: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
+
       /* Style the popup's main container */
       .esri-popup__main-container {
         border-radius: 10px !important; /* Round the corners */
@@ -80,6 +91,7 @@
     <div id="burgerMenu">
       <button id="menuButton">☰ Menu</button>
       <div id="menuContent">
+        <button id="closeMenuButton">Close</button>
         <ul>
           <li><a href="#bookmarks">Bookmarks</a></li>
           <!-- Add more menu items here -->
@@ -188,13 +200,14 @@
         // Burger menu functionality
         const menuButton = document.getElementById("menuButton");
         const menuContent = document.getElementById("menuContent");
+        const closeMenuButton = document.getElementById("closeMenuButton");
 
         menuButton.addEventListener("click", () => {
-          if (menuContent.style.left === "0px") {
-            menuContent.style.left = "-250px"; // Hide the menu
-          } else {
-            menuContent.style.left = "0px"; // Show the menu
-          }
+          menuContent.style.left = "0px"; // Show the menu
+        });
+
+        closeMenuButton.addEventListener("click", () => {
+          menuContent.style.left = "-260px"; // Hide the menu
         });
       });
     </script>
