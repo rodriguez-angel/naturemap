@@ -93,9 +93,7 @@
 
         // Create a feature layer for parks (polygon layer)
         const parksLayer = new FeatureLayer({
-          portalItem: {
-            id: "e49e181ac82c46edac3ae601ebb3ef2d" // Replace with your actual item ID
-          },
+          url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/My_USA_Parks_for_NatureMap/FeatureServer",
           outFields: ["*"], // Retrieve all fields for use in pop-ups or filtering
           popupTemplate: popupParks,
           renderer: parksRenderer // Apply the renderer to the parks layer
