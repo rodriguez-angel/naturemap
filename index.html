@@ -82,24 +82,22 @@
         // Create a feature layer for parks (polygon layer)
         const parksLayer = new FeatureLayer({
           url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Parks/FeatureServer",
-          outFields: ["*"] // Keep this to retrieve all fields
+          outFields: ["*"], // Retrieve all fields for use in pop-ups or filtering
+          popupTemplate: {
+            title: "{NAME}", // Replace with the field name for the park's name
+            content: `
+              <p><b>Object ID:</b> {OBJECTID}</p>
+              <p><b>Description:</b> {FEATTYPE}</p>
+            `
+          }
         });
 
-        // Define a renderer for the parks layer
-        const parksRenderer = {
-          type: "simple", // Simple renderer
-          symbol: {
-            type: "simple-fill", // Fill symbol for polygons
-            color: [0, 128, 0, 0.5], // Green with 50% transparency
-            outline: {
-              color: [0, 0, 0, 0.8], // Black outline
-              width: 1
-            }
-          }
-        };
-
-        // Apply the renderer to the parks layer
-        parksLayer.renderer = parksRenderer;
+        // Debugging: Check if the layer loads
+        parksLayer.when(() => {
+          console.log("Parks layer loaded successfully:", parksLayer);
+        }, (error) => {
+          console.error("Error loading parks layer:", error);
+        });
 
         // Add the parks layer to the map
         map.add(parksLayer);
