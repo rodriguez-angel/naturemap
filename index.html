@@ -18,6 +18,62 @@
         height: 100%;
         width: 100%;
       }
+
+      /* Style for the burger menu */
+      #burgerMenu {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+      }
+
+      #menuButton {
+        background: #0079c1;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      #menuContent {
+        display: none;
+        background: white;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+        margin-top: 5px;
+      }
+
+      /* Style for the bookmarked locations list */
+      #bookmarkList {
+        display: none; /* Initially hidden */
+        position: absolute;
+        top: 50px;
+        left: 10px;
+        z-index: 1000;
+        background: white;
+        border: 1px solid #ccc;
+        padding: 10px;
+        border-radius: 5px;
+        width: 300px;
+        max-height: 400px;
+        overflow-y: auto;
+      }
+
+      #bookmarkList h3 {
+        margin: 0 0 10px;
+      }
+
+      #bookmarkList ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      #bookmarkList li {
+        margin-bottom: 5px;
+      }
     
       /* Style for the "Add Record" button */
       .addRecordBtn {
@@ -77,7 +133,7 @@
           center: [-82.3248, 29.6516], // Initial center point (Gainesville, Florida)
           zoom: 12 // Initial zoom level
         });
-        
+
         // Create a feature layer from a feature service
         const layer = new FeatureLayer({ 
           url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer"
@@ -90,7 +146,14 @@
         const popupParks = {
           title: "{NAME}", // Display the name of the park
           collapseEnabled: true, // Allow collapsing the popup
-          content: "Type of Greenspace: {FEATTYPE} <br> Size in Square Mileage: {SQMI}" // Display additional attributes
+          content: "Type of Greenspace: {FEATTYPE} <br> Size in Square Mileage: {SQMI}", // Display additional attributes
+          actions: [
+            {
+              id: "bookmark-action", // Unique ID for the action
+              title: "Bookmark this location",
+              className: "esri-icon-star" // Use an ArcGIS icon for the button
+            }
+          ]
         };
 
         // Define a renderer for the parks layer
@@ -124,6 +187,43 @@
         // Add the parks layer to the map
         map.add(parksLayer);
 
+        // Array to store bookmarked locations
+        const bookmarkedLocations = [];
+
+        // Listen for the popup action event
+        view.popup.on("trigger-action", (event) => {
+          if (event.action.id === "bookmark-action") {
+            // Get the selected feature's attributes and geometry
+            const feature = view.popup.selectedFeature;
+            const attributes = feature.attributes;
+
+            // Add the location to the bookmarked list
+            bookmarkedLocations.push({
+              name: attributes.NAME, // Example: Park name
+              type: attributes.FEATTYPE, // Example: Greenspace type
+            });
+
+            // Update the UI to show the bookmarked locations
+            updateBookmarkListUI();
+          }
+        });
+
+        // Function to update the bookmark list in the menu
+        function updateBookmarkListUI() {
+          const bookmarkItems = document.getElementById("bookmarkItems");
+          bookmarkItems.innerHTML = ""; // Clear the list
+
+          // Add each bookmarked location to the list
+          bookmarkedLocations.forEach((location) => {
+            const listItem = document.createElement("li");
+            listItem.textContent = `${location.name} (${location.type})`;
+            bookmarkItems.appendChild(listItem);
+          });
+
+          // Show the bookmark list
+          document.getElementById("bookmarkList").style.display = "block";
+        }
+
         // Create the Locate widget
         const locateBtn = new Locate({
           view: view // Attach the Locate widget to the view
@@ -144,10 +244,25 @@
         view.ui.add(searchWidget, {
           position: "top-right"
         });
+
+        // Toggle the burger menu
+        document.getElementById("menuButton").addEventListener("click", () => {
+          const menuContent = document.getElementById("menuContent");
+          menuContent.style.display = menuContent.style.display === "none" ? "block" : "none";
+        });
       });
     </script>
   </head>
   <body>
+    <!-- Burger Menu -->
+    <div id="burgerMenu">
+      <button id="menuButton">☰ Menu</button>
+      <div id="menuContent">
+        <h3>Bookmarked Locations</h3>
+        <ul id="bookmarkItems"></ul>
+      </div>
+    </div>
+
     <!-- Button to add a new record -->
     <a href="https://arcg.is/19XrCu2" target="_blank" class="addRecordBtn">Add Record</a>
     
