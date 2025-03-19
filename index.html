@@ -80,13 +80,13 @@
       #bookmarksScreen {
         position: fixed;
         top: 0;
-        right: -100%; /* Fully hidden off-screen */
-        width: 100%;
+        left: -295px; /* Fully hidden off-screen */
+        width: 250px;
         height: 100%;
         background: white;
         padding: 20px;
-        box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
-        transition: right 0.3s ease; /* Smooth sliding effect */
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        transition: left 0.3s ease; /* Smooth sliding effect */
         z-index: 1001; /* Ensure it appears above other elements */
       }
 
@@ -189,13 +189,13 @@
 
       // Function to open the bookmarks screen
       function openBookmarksScreen() {
-        bookmarksScreen.style.right = "0"; // Slide in the bookmarks screen
+        bookmarksScreen.style.left = "0"; // Slide in the bookmarks screen
         menuContent.style.left = "-295px"; // Hide the burger menu
       }
 
       // Function to close the bookmarks screen and return to the burger menu
       function closeBookmarksScreen() {
-        bookmarksScreen.style.right = "-100%"; // Slide out the bookmarks screen
+        bookmarksScreen.style.left = "-295px"; // Slide out the bookmarks screen
         menuContent.style.left = "0px"; // Show the burger menu
       }
 
