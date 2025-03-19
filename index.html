@@ -37,12 +37,32 @@
       }
 
       #menuContent {
-        display: none;
+        position: fixed;
+        top: 0;
+        left: -250px; /* Initially hidden off-screen */
+        width: 250px;
+        height: 100%;
         background: white;
-        border: 1px solid #ccc;
-        padding: 10px;
-        border-radius: 5px;
-        margin-top: 5px;
+        border-right: 1px solid #ccc;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        transition: left 0.3s ease; /* Smooth sliding effect */
+        z-index: 1000;
+      }
+
+      #menuContent ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      #menuContent ul li {
+        margin: 15px 0;
+      }
+
+      #menuContent ul li a {
+        text-decoration: none;
+        color: #0079c1;
+        font-weight: bold;
       }
 
       /* Style the popup's main container */
@@ -60,7 +80,10 @@
     <div id="burgerMenu">
       <button id="menuButton">☰ Menu</button>
       <div id="menuContent">
-        <p>This is the burger menu content.</p>
+        <ul>
+          <li><a href="#bookmarks">Bookmarks</a></li>
+          <!-- Add more menu items here -->
+        </ul>
       </div>
     </div>
 
@@ -167,10 +190,10 @@
         const menuContent = document.getElementById("menuContent");
 
         menuButton.addEventListener("click", () => {
-          if (menuContent.style.display === "none" || menuContent.style.display === "") {
-            menuContent.style.display = "block"; // Show the menu
+          if (menuContent.style.left === "0px") {
+            menuContent.style.left = "-250px"; // Hide the menu
           } else {
-            menuContent.style.display = "none"; // Hide the menu
+            menuContent.style.left = "0px"; // Show the menu
           }
         });
       });
