@@ -92,7 +92,7 @@
       <button id="menuButton">☰ Menu</button>
       <div id="menuContent">
         <button id="closeMenuButton">Close</button>
-        <ul>
+        <ul id="bookmarksList">
           <li><a href="#bookmarks">Bookmarks</a></li>
           <!-- Add more menu items here -->
         </ul>
@@ -103,6 +103,34 @@
     <div id="viewDiv"></div>
 
     <script>
+      // Array to store bookmarks
+      const bookmarks = [];
+
+      // Function to update the bookmarks list in the menu
+      function updateBookmarksList() {
+        const bookmarksList = document.getElementById("bookmarksList");
+        bookmarksList.innerHTML = ""; // Clear the list
+
+        bookmarks.forEach((bookmark, index) => {
+          const listItem = document.createElement("li");
+          listItem.innerHTML = `
+            <strong>${bookmark.name}</strong><br>
+            Type: ${bookmark.type}<br>
+            Size: ${bookmark.size} sq mi
+            <button style="margin-top: 5px; background: #ff4d4d; color: white; border: none; padding: 5px; border-radius: 5px; cursor: pointer;" onclick="removeBookmark(${index})">
+              Remove
+            </button>
+          `;
+          bookmarksList.appendChild(listItem);
+        });
+      }
+
+      // Function to remove a bookmark
+      function removeBookmark(index) {
+        bookmarks.splice(index, 1); // Remove the bookmark from the array
+        updateBookmarksList(); // Update the list in the menu
+      }
+
       // Load ArcGIS modules
       require([
         "esri/config", 
@@ -165,7 +193,16 @@
 
             // Add a click event listener to the button
             bookmarkButton.addEventListener("click", () => {
-              alert(`Bookmarked: ${attributes.NAME}`);
+              const bookmark = {
+                name: attributes.NAME,
+                type: attributes.FEATTYPE,
+                size: attributes.SQMI,
+              };
+
+              // Add the bookmark to the list
+              bookmarks.push(bookmark);
+              alert(`Bookmarked: ${bookmark.name}`);
+              updateBookmarksList(); // Update the bookmarks list in the menu
             });
 
             // Append the button to the container
