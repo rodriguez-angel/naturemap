@@ -232,6 +232,9 @@
         const menuContent = document.getElementById("menuContent");
         const closeMenuButton = document.getElementById("closeMenuButton");
 
+        // Ensure the burger menu is hidden when the app starts
+        menuContent.style.left = "-295px";
+
         menuButton.addEventListener("click", () => {
           menuContent.style.left = "0px"; // Show the menu
         });
