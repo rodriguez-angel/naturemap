@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!-- character encoding for the document to UTF-8 -->
+    <!-- Character encoding for the document -->
     <meta charset="utf-8" />
-    <!-- sets the viewport properties for the web page -->
+    <!-- Sets the viewport properties for responsive design -->
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
     
     <title>NatureMap</title>
     
     <style>
+      /* Ensure the map view and body take up the full screen */
       html,
       body,
       #viewDiv {
@@ -18,23 +19,25 @@
         width: 100%;
       }
     
+      /* Style for the "Add Record" button */
       .addRecordBtn {
         position: absolute;
-        z-index: 10;
+        z-index: 10; /* Ensure the button is above other elements */
         bottom: 10px;
         right: 10px;
-        background-color: #0079c1;
-        color: white;
+        background-color: #0079c1; /* Primary button color */
+        color: white; /* Button text color */
         padding: 8px 16px;
         border: none;
-        border-radius: 4px;
+        border-radius: 4px; /* Rounded corners */
         font-size: 14px;
         cursor: pointer;
-        text-decoration: none;
+        text-decoration: none; /* Remove underline */
       }
     
+      /* Hover effect for the "Add Record" button */
       .addRecordBtn:hover {
-        background-color: #005a87;
+        background-color: #005a87; /* Darker shade on hover */
       }
 
       /* Style the popup container */
@@ -52,12 +55,12 @@
       }
     </style>
 
-    <!-- CSS file and libraries -->
+    <!-- ArcGIS CSS and JavaScript libraries -->
     <link rel="stylesheet" href="https://js.arcgis.com/4.32/esri/themes/light/main.css" />
     <script src="https://js.arcgis.com/4.32/"></script>
 
-    <!-- Loading modules -->
     <script>
+      // Load ArcGIS modules
       require([
         "esri/config", 
         "esri/Map", 
@@ -73,15 +76,15 @@
 
         // Define the basemap
         const map = new Map({
-          basemap: "satellite"
+          basemap: "satellite" // Use the satellite basemap
         });
 
         // Create the MapView
         const view = new MapView({
           container: "viewDiv", // Reference to the DOM node that will contain the view
           map: map, // References the map object
-          center: [-82.3248, 29.6516], // Gainesville, Florida
-          zoom: 12
+          center: [-82.3248, 29.6516], // Initial center point (Gainesville, Florida)
+          zoom: 12 // Initial zoom level
         });
         
         // Create a feature layer from a feature service
@@ -92,21 +95,22 @@
         // Add the feature layer to the map
         map.add(layer);
 
+        // Define the popup template for parks
         const popupParks = {
-          "title": "{NAME}",
-          collapseEnabled: true,
-          "content": "Type of Greenspace: {FEATTYPE} <br> Size in Square Mileage: {SQMI}"
+          title: "{NAME}", // Display the name of the park
+          collapseEnabled: true, // Allow collapsing the popup
+          content: "Type of Greenspace: {FEATTYPE} <br> Size in Square Mileage: {SQMI}" // Display additional attributes
         };
 
         // Define a renderer for the parks layer
         const parksRenderer = {
-          type: "simple",
+          type: "simple", // Simple renderer
           symbol: {
-            type: "simple-fill",
-            color: [34, 139, 34, 0.8], 
+            type: "simple-fill", // Fill symbol for polygons
+            color: [34, 139, 34, 0.8], // Green fill color with transparency
             outline: {
-              color: [0, 0, 0, 1], 
-              width: .6
+              color: [0, 0, 0, 1], // Black outline
+              width: 0.6 // Outline width
             }
           }
         };
@@ -115,11 +119,11 @@
         const parksLayer = new FeatureLayer({
           url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/MyData/FeatureServer",
           outFields: ["*"], // Retrieve all fields for use in pop-ups or filtering
-          popupTemplate: popupParks,
+          popupTemplate: popupParks, // Apply the popup template
           renderer: parksRenderer // Apply the renderer to the parks layer
         });
 
-        // Debugging: Check if the layer loads
+        // Debugging: Check if the layer loads successfully
         parksLayer.when(() => {
           console.log("Parks layer loaded successfully:", parksLayer);
         }, (error) => {
@@ -131,7 +135,7 @@
 
         // Create the Locate widget
         const locateBtn = new Locate({
-          view: view
+          view: view // Attach the Locate widget to the view
         });
 
         // Add the Locate widget to the top left corner of the view
@@ -141,8 +145,8 @@
 
         // Create the Search widget
         const searchWidget = new Search({
-          view: view,
-          locationEnabled: true
+          view: view, // Attach the Search widget to the view
+          locationEnabled: true // Enable location-based search
         });
 
         // Add the Search widget to the top right corner of the view
