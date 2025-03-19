@@ -92,6 +92,22 @@
           }
         });
 
+        // Define a renderer for the parks layer
+        const parksRenderer = {
+          type: "simple", // Simple renderer
+          symbol: {
+            type: "simple-fill", // Fill symbol for polygons
+            color: [0, 128, 0, 0.5], // Green with 50% transparency
+            outline: {
+              color: [0, 0, 0, 0.8], // Black outline
+              width: 1
+            }
+          }
+        };
+
+        // Apply the renderer to the parks layer
+        parksLayer.renderer = parksRenderer;
+
         // Add the parks layer to the map
         map.add(parksLayer);
 
