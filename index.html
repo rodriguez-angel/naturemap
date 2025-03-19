@@ -36,6 +36,20 @@
       .addRecordBtn:hover {
         background-color: #005a87;
       }
+
+      /* Style the popup container */
+      .esri-popup {
+        font-family: Arial, sans-serif; /* Change font to Arial */
+        border-radius: 10px; /* Round the corners */
+        background-color: black; /* Set background color to black */
+        color: white; /* Set text color to white */
+      }
+
+      /* Style the popup content */
+      .esri-popup__content {
+        font-family: Arial, sans-serif; /* Ensure content font is Arial */
+        color: white; /* Ensure text color is white */
+      }
     </style>
 
     <!-- CSS file and libraries -->
@@ -50,8 +64,9 @@
         "esri/views/MapView", 
         "esri/widgets/Locate", 
         "esri/widgets/Search",
+        "esri/widgets/Popup",
         "esri/layers/FeatureLayer"
-      ], (esriConfig, Map, MapView, Locate, Search, FeatureLayer) => {
+      ], (esriConfig, Map, MapView, Locate, Search, Popup, FeatureLayer) => {
         
         // Set the API key for accessing ArcGIS services
         esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurMDO2Lvg3fqfK_WEnH5iFTMBraaeXiSHJGRbnr1Zs4Isr4QgtEWFLCgjEyJUqKPiF1twAE7x6mEbufhgGS8kDfdHZrm-MxCYabUC4R4l1qsZ41mzL6Or0hSE4dkXf_yST7bEx29lJkvmLZa5L6lxxauEogtg-aafqVSunqkSD9MFqBnsg6KGrMADv7SZEjDdrTjOkdGIkev0d6XLanocxs2I9M7C0otsi3fKjt2gtQYJAT1_mPb6eiGn";
@@ -79,6 +94,7 @@
 
         const popupParks = {
           "title": "{NAME}",
+          collapseEnabled: true,
           "content": "Type of Greenspace: {FEATTYPE} <br> Size in Square Mileage: {SQMI}"
         };
 
