@@ -66,7 +66,7 @@
           container: "viewDiv", // Reference to the DOM node that will contain the view
           map: map, // References the map object
           center: [-82.3248, 29.6516], // Gainesville, Florida
-          zoom: 10,
+          zoom: 15,
           height: "100%",
           width: "100%"
         });
@@ -82,14 +82,7 @@
         // Create a feature layer for parks (polygon layer)
         const parksLayer = new FeatureLayer({
           url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/USA_Detailed_Parks/FeatureServer",
-          outFields: ["*"], // Retrieve all fields for use in pop-ups or filtering
-          popupTemplate: {
-            title: "{NAME}", // Replace with the field name for the park's name
-            content: `
-              <p><b>Object ID:</b> {OBJECTID}</p>
-              <p><b>Description:</b> {FEATTYPE}</p> <!-- Replace with the actual field name -->
-            `
-          }
+          outFields: ["*"] // Keep this to retrieve all fields
         });
 
         // Define a renderer for the parks layer
