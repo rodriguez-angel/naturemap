@@ -44,27 +44,6 @@
         border-radius: 5px;
         margin-top: 5px;
       }
-    
-      /* Style for the "Add Record" button */
-      .addRecordBtn {
-        position: absolute;
-        z-index: 10; /* Ensure the button is above other elements */
-        bottom: 10px;
-        right: 10px;
-        background-color: #0079c1; /* Primary button color */
-        color: white; /* Button text color */
-        padding: 8px 16px;
-        border: none;
-        border-radius: 4px; /* Rounded corners */
-        font-size: 14px;
-        cursor: pointer;
-        text-decoration: none; /* Remove underline */
-      }
-    
-      /* Hover effect for the "Add Record" button */
-      .addRecordBtn:hover {
-        background-color: #005a87; /* Darker shade on hover */
-      }
 
       /* Style the popup's main container */
       .esri-popup__main-container {
@@ -75,14 +54,20 @@
     <!-- ArcGIS CSS and JavaScript libraries -->
     <link rel="stylesheet" href="https://js.arcgis.com/4.32/esri/themes/light/main.css" />
     <script src="https://js.arcgis.com/4.32/"></script>
+  </head>
+  <body>
+    <!-- Burger Menu -->
+    <div id="burgerMenu">
+      <button id="menuButton">☰ Menu</button>
+      <div id="menuContent">
+        <p>This is the burger menu content.</p>
+      </div>
+    </div>
+
+    <!-- Div element to hold the map view -->
+    <div id="viewDiv"></div>
 
     <script>
-      // Toggle the burger menu
-      document.getElementById("menuButton").addEventListener("click", () => {
-        const menuContent = document.getElementById("menuContent");
-        menuContent.style.display = menuContent.style.display === "none" ? "block" : "none";
-      });
-
       // Load ArcGIS modules
       require([
         "esri/config", 
@@ -109,7 +94,7 @@
           center: [-82.3248, 29.6516], // Initial center point (Gainesville, Florida)
           zoom: 12 // Initial zoom level
         });
-        
+
         // Create a feature layer from a feature service
         const layer = new FeatureLayer({ 
           url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer"
@@ -117,7 +102,7 @@
 
         // Add the feature layer to the map
         map.add(layer);
-
+      
         // Define the popup template for parks
         const popupParks = {
           title: "{NAME}", // Display the name of the park
@@ -176,22 +161,19 @@
         view.ui.add(searchWidget, {
           position: "top-right"
         });
+
+        // Burger menu functionality
+        const menuButton = document.getElementById("menuButton");
+        const menuContent = document.getElementById("menuContent");
+
+        menuButton.addEventListener("click", () => {
+          if (menuContent.style.display === "none" || menuContent.style.display === "") {
+            menuContent.style.display = "block"; // Show the menu
+          } else {
+            menuContent.style.display = "none"; // Hide the menu
+          }
+        });
       });
     </script>
-  </head>
-  <body>
-    <!-- Burger Menu -->
-    <div id="burgerMenu">
-      <button id="menuButton">☰ Menu</button>
-      <div id="menuContent">
-        <p>This is the burger menu content.</p>
-      </div>
-    </div>
-
-    <!-- Button to add a new record -->
-    <a href="https://arcg.is/19XrCu2" target="_blank" class="addRecordBtn">Add Record</a>
-    
-    <!-- Div element to hold the map view -->
-    <div id="viewDiv"></div>
   </body>
 </html>
