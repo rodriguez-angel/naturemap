@@ -158,7 +158,21 @@
 
     <script>
       // Array to store bookmarks
-      const bookmarks = [];
+      let bookmarks = [];
+
+      // Function to load bookmarks from localStorage
+      function loadBookmarks() {
+        const savedBookmarks = localStorage.getItem("bookmarks");
+        if (savedBookmarks) {
+          bookmarks = JSON.parse(savedBookmarks); // Parse the saved JSON string into an array
+          updateBookmarksList(); // Update the bookmarks list in the UI
+        }
+      }
+
+      // Function to save bookmarks to localStorage
+      function saveBookmarks() {
+        localStorage.setItem("bookmarks", JSON.stringify(bookmarks)); // Convert the array to a JSON string
+      }
 
       // Function to update the bookmarks list in the bookmarks screen
       function updateBookmarksList() {
@@ -180,6 +194,7 @@
       // Function to remove a bookmark
       function removeBookmark(index) {
         bookmarks.splice(index, 1); // Remove the bookmark from the array
+        saveBookmarks(); // Save the updated bookmarks to localStorage
         updateBookmarksList(); // Update the list in the bookmarks screen
       }
 
@@ -278,6 +293,7 @@
 
               // Add the bookmark to the list
               bookmarks.push(bookmark);
+              saveBookmarks(); // Save the updated bookmarks to localStorage
               alert(`Bookmarked: ${bookmark.name}`);
               updateBookmarksList(); // Update the bookmarks list in the menu
             });
@@ -356,6 +372,9 @@
         closeMenuButton.addEventListener("click", () => {
           menuContent.style.left = "-295px"; // Hide the menu
         });
+
+        // Load bookmarks from localStorage when the app starts
+        loadBookmarks();
       });
     </script>
   </body>
