@@ -93,7 +93,7 @@
 
         // Create a feature layer for parks (polygon layer)
         const parksLayer = new FeatureLayer({
-          url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/My_USA_Parks_for_NatureMap/FeatureServer",
+          url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/MyData/FeatureServer",
           outFields: ["*"], // Retrieve all fields for use in pop-ups or filtering
           popupTemplate: popupParks,
           renderer: parksRenderer // Apply the renderer to the parks layer
