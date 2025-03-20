@@ -355,11 +355,26 @@
       let communityPosts = [];
 
       // Function to load community posts from localStorage
-      function loadCommunityPosts() {
-        const savedPosts = localStorage.getItem("communityPosts");
-        if (savedPosts) {
-          communityPosts = JSON.parse(savedPosts); // Parse the saved JSON string into an array
-          updateCommunityFeedList(); // Update the community feed list in the UI
+      async function loadCommunityPosts() {
+        const featureLayerUrl =
+          "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_6d4009b4475d48f5847214ac894b911f_results/FeatureServer/0/query";
+      
+        try {
+          const response = await fetch(
+            `${featureLayerUrl}?where=1=1&outFields=park_name,message&f=json`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            communityPosts = data.features.map((feature) => ({
+              parkName: feature.attributes.park_name, // Map "park_name" to "parkName"
+              message: feature.attributes.message, // Map "message" to "message"
+            }));
+            updateCommunityFeedList(); // Update the community feed list in the UI
+          } else {
+            console.error("Failed to load community posts:", response.statusText);
+          }
+        } catch (error) {
+          console.error("Error loading community posts:", error);
         }
       }
 
@@ -392,8 +407,7 @@
       }
 
       function removeCommunityPost(index) {
-        communityPosts.splice(index, 1); // Remove the post from the array
-        saveCommunityPosts(); // Save the updated posts to localStorage
+        communityPosts.splice(index, 1); // Remove the post from the local array
         updateCommunityFeedList(); // Update the list in the Community Feed screen
       }
 
@@ -594,20 +608,50 @@
             saveButton.style.borderRadius = "5px";
             saveButton.style.cursor = "pointer";
 
-            saveButton.addEventListener("click", () => {
+            // Replace the saveButton event listener with this code
+            saveButton.addEventListener("click", async () => {
               const message = inputBox.value.trim();
               if (message) {
                 const communityPost = {
-                  parkName: attributes.NAME,
-                  message: message,
+                  park_name: attributes.NAME, // Use the field name "park_name"
+                  message: message, // Use the field name "message"
                 };
 
-                // Add the message to the community feed
-                communityPosts.push(communityPost);
-                saveCommunityPosts(); // Save the updated posts to localStorage
-                updateCommunityFeedList(); // Update the Community Feed list
-                alert(`Message saved for ${attributes.NAME}`);
-                inputBox.value = ""; // Clear the input box
+                // Submit the data to the Survey123 feature layer
+                const survey123Url = "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_6d4009b4475d48f5847214ac894b911f_results/FeatureServer/0/addFeatures";
+                const surveyData = {
+                  features: [
+                    {
+                      attributes: {
+                        park_name: communityPost.park_name,
+                        message: communityPost.message,
+                      },
+                    },
+                  ],
+                };
+
+                try {
+                  const response = await fetch(survey123Url, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(surveyData),
+                  });
+
+                  const result = await response.json();
+                  if (result.addResults && result.addResults[0].success) {
+                    alert(`Message saved for ${communityPost.park_name}`);
+                    inputBox.value = ""; // Clear the input box
+                    loadCommunityPosts(); // Reload the community feed
+                  } else {
+                    console.error("Failed to submit data to Survey123:", result);
+                    alert("Failed to save the message. Please try again.");
+                  }
+                } catch (error) {
+                  console.error("Error submitting data to Survey123:", error);
+                  alert("An error occurred while saving the message.");
+                }
               } else {
                 alert("Please write a message before saving.");
               }
