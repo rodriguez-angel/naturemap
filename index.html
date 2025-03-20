@@ -395,8 +395,8 @@
             // Create the "Add to Bookmarks" button
             const bookmarkButton = document.createElement("button");
             bookmarkButton.textContent = "Add to Bookmarks";
-            bookmarkButton.style.background = "#0079c1";
-            bookmarkButton.style.color = "white";
+            bookmarkButton.style.background = "#FFD700"; // Yellow color
+            bookmarkButton.style.color = "black";
             bookmarkButton.style.border = "none";
             bookmarkButton.style.padding = "5px 10px";
             bookmarkButton.style.borderRadius = "5px";
@@ -404,6 +404,7 @@
 
             bookmarkButton.addEventListener("click", () => {
               const bookmark = {
+                id: attributes.OBJECTID, // Use a unique identifier
                 name: attributes.NAME,
                 type: attributes.FEATTYPE,
                 size: attributes.SQMI,
@@ -414,12 +415,13 @@
               saveBookmarks(); // Save the updated bookmarks to localStorage
               alert(`Bookmarked: ${bookmark.name}`);
               updateBookmarksList(); // Update the bookmarks list in the menu
+              updateRenderer(); // Update the renderer to reflect the new status
             });
 
             // Create the "Add to Previously Visited" button
             const visitedButton = document.createElement("button");
             visitedButton.textContent = "Add to Previously Visited";
-            visitedButton.style.background = "#ff9900";
+            visitedButton.style.background = "#FF4500"; // Red color
             visitedButton.style.color = "white";
             visitedButton.style.border = "none";
             visitedButton.style.padding = "5px 10px";
@@ -429,6 +431,7 @@
 
             visitedButton.addEventListener("click", () => {
               const visited = {
+                id: attributes.OBJECTID, // Use a unique identifier
                 name: attributes.NAME,
                 type: attributes.FEATTYPE,
                 size: attributes.SQMI,
@@ -439,6 +442,7 @@
               savePreviouslyVisited(); // Save the updated list to localStorage
               alert(`Added to Previously Visited: ${visited.name}`);
               updatePreviouslyVisitedList(); // Update the previously visited list in the menu
+              updateRenderer(); // Update the renderer to reflect the new status
             });
 
             // Append the buttons to the container
@@ -522,7 +526,55 @@
 
         // Load previously visited locations from localStorage when the app starts
         loadPreviouslyVisited();
+        
+        // Update the renderer to reflect the saved lists
+        updateRenderer();
       });
+
+      function updateRenderer() {
+        const bookmarkedIds = bookmarks.map((b) => b.id); // Get IDs of bookmarked parks
+        const visitedIds = previouslyVisited.map((v) => v.id); // Get IDs of previously visited parks
+
+        parksLayer.renderer = {
+          type: "unique-value", // Use a unique value renderer
+          field: "OBJECTID", // Use the unique identifier field
+          uniqueValueInfos: [
+            {
+              value: null, // Default value for parks not in any list
+              symbol: {
+                type: "simple-fill",
+                color: [34, 139, 34, 0.8], // Green color
+                outline: {
+                  color: [0, 0, 0, 1],
+                  width: 0.6,
+                },
+              },
+            },
+            ...bookmarkedIds.map((id) => ({
+              value: id,
+              symbol: {
+                type: "simple-fill",
+                color: [255, 215, 0, 0.8], // Yellow color for bookmarks
+                outline: {
+                  color: [0, 0, 0, 1],
+                  width: 0.6,
+                },
+              },
+            })),
+            ...visitedIds.map((id) => ({
+              value: id,
+              symbol: {
+                type: "simple-fill",
+                color: [255, 69, 0, 0.8], // Red color for previously visited
+                outline: {
+                  color: [0, 0, 0, 1],
+                  width: 0.6,
+                },
+              },
+            })),
+          ],
+        };
+      }
     </script>
   </body>
 </html>
