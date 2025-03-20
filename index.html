@@ -358,7 +358,7 @@
       ], (esriConfig, Map, MapView, Locate, Search, Popup, FeatureLayer) => {
         
         // Set the API key for accessing ArcGIS services
-        esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurMDO2Lvg3fqfK_WEnH5iFTMBraaeXiSHJGRbnr1Zs4Isr4QgtEWFLCgjEyJUqKPiF1twAE7x6mEbufhgGS8kDfdHZrm-MxCYabUC4R4l1qsZ41mzL6Or0hSE4dkXf_yST7bEx29lJkvmLZa5L6lxxauEogtg-aafqVSunqkSD9MFqBnsg6KGrMADv7SZEjDdrTjOkdGIkev0d6XLanocxs2I9M7C0otsi3fKjt2gtQYJAT1_mPb6eiGn";
+        esriConfig.apiKey = "YOUR_API_KEY";
 
         // Define the basemap
         const map = new Map({
@@ -373,14 +373,6 @@
           zoom: 12 // Initial zoom level
         });
 
-        // Create a feature layer from a feature service
-        const layer = new FeatureLayer({ 
-          url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer"
-        });
-
-        // Add the feature layer to the map
-        map.add(layer);
-      
         // Define the popup template for parks
         const popupParks = {
           title: "{NAME}", // Display the name of the park
@@ -477,15 +469,22 @@
           renderer: parksRenderer // Apply the renderer to the parks layer
         });
 
-        // Debugging: Check if the layer loads successfully
+        // Add the parks layer to the map
+        map.add(parksLayer);
+
+        // Ensure the renderer is updated after the parks layer is loaded
         parksLayer.when(() => {
           console.log("Parks layer loaded successfully:", parksLayer);
+
+          // Load bookmarks and previously visited locations from localStorage
+          loadBookmarks();
+          loadPreviouslyVisited();
+
+          // Update the renderer to reflect the saved lists
+          updateRenderer();
         }, (error) => {
           console.error("Error loading parks layer:", error);
         });
-
-        // Add the parks layer to the map
-        map.add(parksLayer);
 
         // Create the Locate widget
         const locateBtn = new Locate({
