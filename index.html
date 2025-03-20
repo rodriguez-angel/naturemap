@@ -406,7 +406,7 @@
 
             bookmarkButton.addEventListener("click", () => {
               const bookmark = {
-                id: attributes.OBJECTID, // Use a unique identifier
+                id: attributes.FID, // Use a unique identifier
                 name: attributes.NAME,
                 type: attributes.FEATTYPE,
                 size: attributes.SQMI,
@@ -433,7 +433,7 @@
 
             visitedButton.addEventListener("click", () => {
               const visited = {
-                id: attributes.OBJECTID, // Use a unique identifier
+                id: attributes.FID, // Use the correct field name
                 name: attributes.NAME,
                 type: attributes.FEATTYPE,
                 size: attributes.SQMI,
@@ -542,7 +542,7 @@
 
         parksLayer.renderer = {
           type: "unique-value", // Use a unique value renderer
-          field: "OBJECTID", // Use the unique identifier field
+          field: "FID", // Use the unique identifier field
           uniqueValueInfos: [
 {
               value: null, // Default value for parks not in any list
