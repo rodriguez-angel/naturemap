@@ -262,8 +262,6 @@
     <div id="communityFeedScreen">
       <button id="closeCommunityFeedButton">Back</button>
       <h2>Community Feed</h2>
-      <textarea id="communityInput" placeholder="Visited before? Let others know how it went!"></textarea>
-      <button id="postCommunityMessageButton">Post</button>
       <ul id="communityFeedList"></ul> <!-- List to display community posts -->
     </div>
 
@@ -434,8 +432,6 @@
       // Get references to the Community Feed screen and its buttons
       const communityFeedScreen = document.getElementById("communityFeedScreen");
       const closeCommunityFeedButton = document.getElementById("closeCommunityFeedButton");
-      const postCommunityMessageButton = document.getElementById("postCommunityMessageButton");
-      const communityInput = document.getElementById("communityInput");
 
       // Function to open the Community Feed screen
       function openCommunityFeedScreen() {
@@ -447,19 +443,6 @@
       function closeCommunityFeedScreen() {
         communityFeedScreen.style.left = "-295px"; // Slide out the Community Feed screen
         menuContent.style.left = "0px"; // Show the burger menu
-      }
-
-      // Function to handle posting a new community message
-      function postCommunityMessage() {
-        const message = communityInput.value.trim(); // Get the input value and trim whitespace
-        if (message) {
-          communityPosts.push(message); // Add the message to the array
-          saveCommunityPosts(); // Save the updated posts to localStorage
-          updateCommunityFeedList(); // Update the list in the Community Feed screen
-          communityInput.value = ""; // Clear the input field
-        } else {
-          alert("Please write a message before posting.");
-        }
       }
 
       // Attach event listener to the "Bookmarks" link in the burger menu
