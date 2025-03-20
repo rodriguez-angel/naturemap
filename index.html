@@ -343,6 +343,9 @@
       // Attach event listener to the close button in the previously visited screen
       closePreviouslyVisitedButton.addEventListener("click", closePreviouslyVisitedScreen);
 
+      // Declare parksLayer globally
+      let parksLayer;
+
       // Load ArcGIS modules
       require([
         "esri/config", 
@@ -467,7 +470,7 @@
         };
 
         // Create a feature layer for parks (polygon layer)
-        const parksLayer = new FeatureLayer({
+        parksLayer = new FeatureLayer({
           url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/MyData/FeatureServer",
           outFields: ["*"], // Retrieve all fields for use in pop-ups or filtering
           popupTemplate: popupParks, // Apply the popup template
