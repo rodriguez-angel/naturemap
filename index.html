@@ -344,6 +344,8 @@
       closePreviouslyVisitedButton.addEventListener("click", closePreviouslyVisitedScreen);
 
       // Load ArcGIS modules
+      let parksLayer; // Declare globally
+
       require([
         "esri/config", 
         "esri/Map", 
@@ -467,7 +469,7 @@
         };
 
         // Create a feature layer for parks (polygon layer)
-        const parksLayer = new FeatureLayer({
+        parksLayer = new FeatureLayer({
           url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/MyData/FeatureServer",
           outFields: ["*"], // Retrieve all fields for use in pop-ups or filtering
           popupTemplate: popupParks, // Apply the popup template
@@ -477,6 +479,7 @@
         // Debugging: Check if the layer loads successfully
         parksLayer.when(() => {
           console.log("Parks layer loaded successfully:", parksLayer);
+          updateRenderer(); // Update the renderer after the layer is loaded
         }, (error) => {
           console.error("Error loading parks layer:", error);
         });
@@ -532,6 +535,8 @@
       });
 
       function updateRenderer() {
+        if (!parksLayer) return; // Ensure parksLayer is loaded
+
         const bookmarkedIds = bookmarks.map((b) => b.id); // Get IDs of bookmarked parks
         const visitedIds = previouslyVisited.map((v) => v.id); // Get IDs of previously visited parks
 
@@ -539,7 +544,7 @@
           type: "unique-value", // Use a unique value renderer
           field: "OBJECTID", // Use the unique identifier field
           uniqueValueInfos: [
-            {
+{
               value: null, // Default value for parks not in any list
               symbol: {
                 type: "simple-fill",
@@ -573,6 +578,14 @@
               },
             })),
           ],
+          defaultSymbol: {
+            type: "simple-fill",
+            color: [34, 139, 34, 0.8], // Green color for default
+            outline: {
+              color: [0, 0, 0, 1],
+              width: 0.6,
+            },
+          },
         };
       }
     </script>
