@@ -123,6 +123,53 @@
         margin-bottom: 20px;
       }
 
+      /* Previously Visited Screen */
+      #previouslyVisitedScreen {
+        position: fixed;
+        top: 0;
+        left: -295px; /* Fully hidden off-screen */
+        width: 250px;
+        height: 100%;
+        background: white;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        transition: left 0.3s ease; /* Smooth sliding effect */
+        z-index: 1001; /* Ensure it appears above other elements */
+      }
+
+      #previouslyVisitedScreen h2 {
+        margin-top: 0;
+      }
+
+      #previouslyVisitedScreen ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      #previouslyVisitedScreen ul li {
+        margin: 15px 0;
+      }
+
+      #previouslyVisitedScreen ul li button {
+        margin-top: 5px;
+        background: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      #closePreviouslyVisitedButton {
+        background: #0079c1;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
+
       /* Style the popup's main container */
       .esri-popup__main-container {
         border-radius: 10px !important; /* Round the corners */
@@ -141,7 +188,7 @@
         <button id="closeMenuButton">Close</button>
         <ul>
           <li><a href="#bookmarks">Bookmarks</a></li>
-          <!-- Add more menu items here -->
+          <li><a href="#previouslyVisited">Previously Visited</a></li>
         </ul>
       </div>
     </div>
@@ -151,6 +198,13 @@
       <button id="closeBookmarksButton">Back</button>
       <h2>Bookmarked Locations</h2>
       <ul id="bookmarksList"></ul> <!-- List to display bookmarks -->
+    </div>
+
+    <!-- Previously Visited Screen -->
+    <div id="previouslyVisitedScreen">
+      <button id="closePreviouslyVisitedButton">Back</button>
+      <h2>Previously Visited Locations</h2>
+      <ul id="previouslyVisitedList"></ul> <!-- List to display previously visited locations -->
     </div>
 
     <!-- Div element to hold the map view -->
@@ -198,6 +252,47 @@
         updateBookmarksList(); // Update the list in the bookmarks screen
       }
 
+      // Array to store previously visited locations
+      let previouslyVisited = [];
+
+      // Function to load previously visited locations from localStorage
+      function loadPreviouslyVisited() {
+        const savedVisited = localStorage.getItem("previouslyVisited");
+        if (savedVisited) {
+          previouslyVisited = JSON.parse(savedVisited); // Parse the saved JSON string into an array
+          updatePreviouslyVisitedList(); // Update the list in the UI
+        }
+      }
+
+      // Function to save previously visited locations to localStorage
+      function savePreviouslyVisited() {
+        localStorage.setItem("previouslyVisited", JSON.stringify(previouslyVisited)); // Convert the array to a JSON string
+      }
+
+      // Function to update the previously visited list in the UI
+      function updatePreviouslyVisitedList() {
+        const previouslyVisitedList = document.getElementById("previouslyVisitedList");
+        previouslyVisitedList.innerHTML = ""; // Clear the list
+
+        previouslyVisited.forEach((location, index) => {
+          const listItem = document.createElement("li");
+          listItem.innerHTML = `
+            <strong>${location.name}</strong><br>
+            Type: ${location.type}<br>
+            Size: ${location.size} sq mi
+            <button onclick="removePreviouslyVisited(${index})">Remove</button>
+          `;
+          previouslyVisitedList.appendChild(listItem);
+        });
+      }
+
+      // Function to remove a previously visited location
+      function removePreviouslyVisited(index) {
+        previouslyVisited.splice(index, 1); // Remove the location from the array
+        savePreviouslyVisited(); // Save the updated list to localStorage
+        updatePreviouslyVisitedList(); // Update the list in the UI
+      }
+
       // Get references to the bookmarks screen and its close button
       const bookmarksScreen = document.getElementById("bookmarksScreen");
       const closeBookmarksButton = document.getElementById("closeBookmarksButton");
@@ -214,6 +309,22 @@
         menuContent.style.left = "0px"; // Show the burger menu
       }
 
+      // Get references to the previously visited screen and its close button
+      const previouslyVisitedScreen = document.getElementById("previouslyVisitedScreen");
+      const closePreviouslyVisitedButton = document.getElementById("closePreviouslyVisitedButton");
+
+      // Function to open the previously visited screen
+      function openPreviouslyVisitedScreen() {
+        previouslyVisitedScreen.style.left = "0"; // Slide in the previously visited screen
+        menuContent.style.left = "-295px"; // Hide the burger menu
+      }
+
+      // Function to close the previously visited screen and return to the burger menu
+      function closePreviouslyVisitedScreen() {
+        previouslyVisitedScreen.style.left = "-295px"; // Slide out the previously visited screen
+        menuContent.style.left = "0px"; // Show the burger menu
+      }
+
       // Attach event listener to the "Bookmarks" link in the burger menu
       document.querySelector('a[href="#bookmarks"]').addEventListener("click", (e) => {
         e.preventDefault(); // Prevent default link behavior
@@ -222,6 +333,15 @@
 
       // Attach event listener to the close button in the bookmarks screen
       closeBookmarksButton.addEventListener("click", closeBookmarksScreen);
+
+      // Attach event listener to the "Previously Visited" link in the burger menu
+      document.querySelector('a[href="#previouslyVisited"]').addEventListener("click", (e) => {
+        e.preventDefault(); // Prevent default link behavior
+        openPreviouslyVisitedScreen(); // Open the previously visited screen
+      });
+
+      // Attach event listener to the close button in the previously visited screen
+      closePreviouslyVisitedButton.addEventListener("click", closePreviouslyVisitedScreen);
 
       // Load ArcGIS modules
       require([
@@ -375,6 +495,9 @@
 
         // Load bookmarks from localStorage when the app starts
         loadBookmarks();
+
+        // Load previously visited locations from localStorage when the app starts
+        loadPreviouslyVisited();
       });
     </script>
   </body>
