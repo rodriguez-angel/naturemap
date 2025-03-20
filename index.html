@@ -407,7 +407,8 @@
       }
 
       function removeCommunityPost(index) {
-        communityPosts.splice(index, 1); // Remove the post from the local array
+        communityPosts.splice(index, 1); // Remove the post from the array
+        saveCommunityPosts(); // Save the updated posts to localStorage
         updateCommunityFeedList(); // Update the list in the Community Feed screen
       }
 
@@ -527,146 +528,7 @@
         const popupParks = {
           title: "{NAME}", // Display the name of the park
           collapseEnabled: true, // Allow collapsing the popup
-          content: (feature) => {
-            const attributes = feature.graphic.attributes;
-            const container = document.createElement("div");
-
-            // Add the greenspace type and size
-            container.innerHTML = `
-              <p>Type of Greenspace: ${attributes.FEATTYPE}</p>
-              <p>Size in Square Mileage: ${attributes.SQMI}</p>
-            `;
-
-            // Create the "Add to Bookmarks" button
-            const bookmarkButton = document.createElement("button");
-            bookmarkButton.textContent = "Add to Bookmarks";
-            bookmarkButton.style.background = "#FFD700"; // Yellow color
-            bookmarkButton.style.color = "black";
-            bookmarkButton.style.border = "none";
-            bookmarkButton.style.padding = "5px 10px";
-            bookmarkButton.style.borderRadius = "5px";
-            bookmarkButton.style.cursor = "pointer";
-
-            bookmarkButton.addEventListener("click", () => {
-              const bookmark = {
-                id: attributes.FID, // Use a unique identifier
-                name: attributes.NAME,
-                type: attributes.FEATTYPE,
-                size: attributes.SQMI,
-              };
-
-              // Add the bookmark to the list
-              bookmarks.push(bookmark);
-              saveBookmarks(); // Save the updated bookmarks to localStorage
-              alert(`Bookmarked: ${bookmark.name}`);
-              updateBookmarksList(); // Update the bookmarks list in the menu
-              updateRenderer(); // Update the renderer to reflect the new status
-            });
-
-            // Create the "Add to Previously Visited" button
-            const visitedButton = document.createElement("button");
-            visitedButton.textContent = "Add to Previously Visited";
-            visitedButton.style.background = "#FF4500"; // Red color
-            visitedButton.style.color = "white";
-            visitedButton.style.border = "none";
-            visitedButton.style.padding = "5px 10px";
-            visitedButton.style.borderRadius = "5px";
-            visitedButton.style.cursor = "pointer";
-            visitedButton.style.marginLeft = "10px"; // Add spacing between buttons
-
-            visitedButton.addEventListener("click", () => {
-              const visited = {
-                id: attributes.FID, // Use the correct field name
-                name: attributes.NAME,
-                type: attributes.FEATTYPE,
-                size: attributes.SQMI,
-              };
-
-              // Add the location to the previously visited list
-              previouslyVisited.push(visited);
-              savePreviouslyVisited(); // Save the updated list to localStorage
-              alert(`Added to Previously Visited: ${visited.name}`);
-              updatePreviouslyVisitedList(); // Update the previously visited list in the menu
-              updateRenderer(); // Update the renderer to reflect the new status
-            });
-
-            // Create the text box for user input
-            const inputBox = document.createElement("textarea");
-            inputBox.placeholder = "Visited before? Let others know how it went!";
-            inputBox.style.width = "100%";
-            inputBox.style.height = "60px";
-            inputBox.style.marginBottom = "10px";
-            inputBox.style.padding = "5px";
-
-            // Create the "Save to Community Feed" button
-            const saveButton = document.createElement("button");
-            saveButton.textContent = "Save to Community Feed";
-            saveButton.style.background = "#0079c1";
-            saveButton.style.color = "white";
-            saveButton.style.border = "none";
-            saveButton.style.padding = "5px 10px";
-            saveButton.style.borderRadius = "5px";
-            saveButton.style.cursor = "pointer";
-
-            // Replace the saveButton event listener with this code
-            saveButton.addEventListener("click", async () => {
-              const message = inputBox.value.trim();
-              if (message) {
-                const communityPost = {
-                  park_name: attributes.NAME, // Use the field name "park_name"
-                  message: message, // Use the field name "message"
-                };
-
-                // Submit the data to the Survey123 feature layer
-                const survey123Url = "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_6d4009b4475d48f5847214ac894b911f_results/FeatureServer/0/addFeatures";
-                const surveyData = {
-                  features: [
-                    {
-                      attributes: {
-                        park_name: communityPost.park_name,
-                        message: communityPost.message,
-                      },
-                    },
-                  ],
-                };
-
-                try {
-                  const response = await fetch(survey123Url, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(surveyData),
-                  });
-
-                  const result = await response.json();
-                  if (result.addResults && result.addResults[0].success) {
-                    alert(`Message saved for ${communityPost.park_name}`);
-                    inputBox.value = ""; // Clear the input box
-                    loadCommunityPosts(); // Reload the community feed
-                  } else {
-                    console.error("Failed to submit data to Survey123:", result);
-                    alert("Failed to save the message. Please try again.");
-                  }
-                } catch (error) {
-                  console.error("Error submitting data to Survey123:", error);
-                  alert("An error occurred while saving the message.");
-                }
-              } else {
-                alert("Please write a message before saving.");
-              }
-            });
-
-            // Append the input box and button to the container
-            container.appendChild(inputBox);
-            container.appendChild(saveButton);
-
-            // Append the buttons to the container
-            container.appendChild(bookmarkButton);
-            container.appendChild(visitedButton);
-
-            return container; // Return the container as the popup content
-          },
+          content: (feature) => createPopupContent(feature.graphic.attributes),
         };
 
         // Define a renderer for the parks layer
@@ -794,6 +656,96 @@
           },
         };
       }
+
+      // Function to submit data to Survey123 and update the Community Feed
+      async function submitToSurvey123(parkName, message) {
+        const survey123Url =
+          "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_6d4009b4475d48f5847214ac894b911f_results/FeatureServer/0/addFeatures";
+        const surveyData = {
+          features: [
+            {
+              attributes: {
+                park_name: parkName,
+                message: message,
+              },
+            },
+          ],
+        };
+
+        try {
+          const response = await fetch(survey123Url, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(surveyData),
+          });
+
+          const result = await response.json();
+          if (result.addResults && result.addResults[0].success) {
+            alert(`Message saved for ${parkName}`);
+            loadCommunityPosts(); // Reload the Community Feed
+          } else {
+            console.error("Failed to submit data to Survey123:", result);
+            alert("Failed to save the message. Please try again.");
+          }
+        } catch (error) {
+          console.error("Error submitting data to Survey123:", error);
+          alert("An error occurred while saving the message.");
+        }
+      }
+
+      // Function to create the popup content
+      function createPopupContent(attributes) {
+        const container = document.createElement("div");
+
+        // Add the greenspace type and size
+        container.innerHTML = `
+          <p>Type of Greenspace: ${attributes.FEATTYPE}</p>
+          <p>Size in Square Mileage: ${attributes.SQMI}</p>
+        `;
+
+        // Create the text box for user input
+        const inputBox = document.createElement("textarea");
+        inputBox.placeholder = "Visited before? Let others know how it went!";
+        inputBox.style.width = "100%";
+        inputBox.style.height = "60px";
+        inputBox.style.marginBottom = "10px";
+        inputBox.style.padding = "5px";
+
+        // Create the "Save to Community Feed" button
+        const saveButton = document.createElement("button");
+        saveButton.textContent = "Save to Community Feed";
+        saveButton.style.background = "#0079c1";
+        saveButton.style.color = "white";
+        saveButton.style.border = "none";
+        saveButton.style.padding = "5px 10px";
+        saveButton.style.borderRadius = "5px";
+        saveButton.style.cursor = "pointer";
+
+        saveButton.addEventListener("click", () => {
+          const message = inputBox.value.trim();
+          if (message) {
+            submitToSurvey123(attributes.NAME, message); // Submit to Survey123
+            inputBox.value = ""; // Clear the input box
+          } else {
+            alert("Please write a message before saving.");
+          }
+        });
+
+        // Append the input box and button to the container
+        container.appendChild(inputBox);
+        container.appendChild(saveButton);
+
+        return container;
+      }
+
+      // Update the popup template for parks
+      const popupParks = {
+        title: "{NAME}", // Display the name of the park
+        collapseEnabled: true, // Allow collapsing the popup
+        content: (feature) => createPopupContent(feature.graphic.attributes),
+      };
     </script>
   </body>
 </html>
