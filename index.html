@@ -375,11 +375,28 @@
         const communityFeedList = document.getElementById("communityFeedList");
         communityFeedList.innerHTML = ""; // Clear the list
 
-        communityPosts.forEach((post) => {
+        communityPosts.forEach((post, index) => {
           const listItem = document.createElement("li");
-          listItem.textContent = post; // Display the post text
+          listItem.innerHTML = `
+            <strong>${post.parkName}:</strong> ${post.message}
+            <button onclick="removeCommunityPost(${index})" style="
+              background: #ff4d4d;
+              color: white;
+              border: none;
+              padding: 5px;
+              border-radius: 5px;
+              cursor: pointer;
+              margin-left: 10px;
+            ">Remove</button>
+          `;
           communityFeedList.appendChild(listItem);
         });
+      }
+
+      function removeCommunityPost(index) {
+        communityPosts.splice(index, 1); // Remove the post from the array
+        saveCommunityPosts(); // Save the updated posts to localStorage
+        updateCommunityFeedList(); // Update the list in the Community Feed screen
       }
 
       // Get references to the bookmarks screen and its close button
@@ -471,9 +488,6 @@
 
       // Attach event listener to the close button in the Community Feed screen
       closeCommunityFeedButton.addEventListener("click", closeCommunityFeedScreen);
-
-      // Attach event listener to the post button in the Community Feed screen
-      postCommunityMessageButton.addEventListener("click", postCommunityMessage);
 
       // Load ArcGIS modules
       let parksLayer; // Declare globally
@@ -578,6 +592,47 @@
               updatePreviouslyVisitedList(); // Update the previously visited list in the menu
               updateRenderer(); // Update the renderer to reflect the new status
             });
+
+            // Create the text box for user input
+            const inputBox = document.createElement("textarea");
+            inputBox.placeholder = "Visited before? Let others know how it went!";
+            inputBox.style.width = "100%";
+            inputBox.style.height = "60px";
+            inputBox.style.marginBottom = "10px";
+            inputBox.style.padding = "5px";
+
+            // Create the "Save to Community Feed" button
+            const saveButton = document.createElement("button");
+            saveButton.textContent = "Save to Community Feed";
+            saveButton.style.background = "#0079c1";
+            saveButton.style.color = "white";
+            saveButton.style.border = "none";
+            saveButton.style.padding = "5px 10px";
+            saveButton.style.borderRadius = "5px";
+            saveButton.style.cursor = "pointer";
+
+            saveButton.addEventListener("click", () => {
+              const message = inputBox.value.trim();
+              if (message) {
+                const communityPost = {
+                  parkName: attributes.NAME,
+                  message: message,
+                };
+
+                // Add the message to the community feed
+                communityPosts.push(communityPost);
+                saveCommunityPosts(); // Save the updated posts to localStorage
+                updateCommunityFeedList(); // Update the Community Feed list
+                alert(`Message saved for ${attributes.NAME}`);
+                inputBox.value = ""; // Clear the input box
+              } else {
+                alert("Please write a message before saving.");
+              }
+            });
+
+            // Append the input box and button to the container
+            container.appendChild(inputBox);
+            container.appendChild(saveButton);
 
             // Append the buttons to the container
             container.appendChild(bookmarkButton);
