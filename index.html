@@ -171,6 +171,55 @@
         margin-bottom: 20px;
       }
 
+      /* Community Feed Screen */
+      #communityFeedScreen {
+        position: fixed;
+        top: 0;
+        left: -295px; /* Fully hidden off-screen */
+        width: 250px;
+        height: 100%;
+        background: white;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        transition: left 0.3s ease; /* Smooth sliding effect */
+        z-index: 1001; /* Ensure it appears above other elements */
+      }
+
+      #communityFeedScreen h2 {
+        margin-top: 0;
+      }
+
+      #communityFeedScreen textarea {
+        width: 100%;
+        height: 80px;
+        margin-bottom: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        resize: none;
+      }
+
+      #communityFeedScreen button {
+        background: #0079c1;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
+
+      #communityFeedScreen ul {
+        list-style: none;
+        padding: 0;
+      }
+
+      #communityFeedScreen ul li {
+        margin: 15px 0;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 10px;
+      }
+
       /* Style the popup's main container */
       .esri-popup__main-container {
         border-radius: 10px !important; /* Round the corners */
@@ -190,6 +239,7 @@
         <ul>
           <li><a href="#bookmarks">Bookmarks</a></li>
           <li><a href="#previouslyVisited">Previously Visited</a></li>
+          <li><a href="#communityFeed">Community Feed</a></li> <!-- New Community Feed link -->
         </ul>
       </div>
     </div>
@@ -206,6 +256,15 @@
       <button id="closePreviouslyVisitedButton">Back</button>
       <h2>Previously Visited Locations</h2>
       <ul id="previouslyVisitedList"></ul> <!-- List to display previously visited locations -->
+    </div>
+
+    <!-- Community Feed Screen -->
+    <div id="communityFeedScreen">
+      <button id="closeCommunityFeedButton">Back</button>
+      <h2>Community Feed</h2>
+      <textarea id="communityInput" placeholder="Visited before? Let others know how it went!"></textarea>
+      <button id="postCommunityMessageButton">Post</button>
+      <ul id="communityFeedList"></ul> <!-- List to display community posts -->
     </div>
 
     <!-- Div element to hold the map view -->
@@ -294,6 +353,35 @@
         updatePreviouslyVisitedList(); // Update the list in the UI
       }
 
+      // Array to store community posts
+      let communityPosts = [];
+
+      // Function to load community posts from localStorage
+      function loadCommunityPosts() {
+        const savedPosts = localStorage.getItem("communityPosts");
+        if (savedPosts) {
+          communityPosts = JSON.parse(savedPosts); // Parse the saved JSON string into an array
+          updateCommunityFeedList(); // Update the community feed list in the UI
+        }
+      }
+
+      // Function to save community posts to localStorage
+      function saveCommunityPosts() {
+        localStorage.setItem("communityPosts", JSON.stringify(communityPosts)); // Convert the array to a JSON string
+      }
+
+      // Function to update the community feed list in the UI
+      function updateCommunityFeedList() {
+        const communityFeedList = document.getElementById("communityFeedList");
+        communityFeedList.innerHTML = ""; // Clear the list
+
+        communityPosts.forEach((post) => {
+          const listItem = document.createElement("li");
+          listItem.textContent = post; // Display the post text
+          communityFeedList.appendChild(listItem);
+        });
+      }
+
       // Get references to the bookmarks screen and its close button
       const bookmarksScreen = document.getElementById("bookmarksScreen");
       const closeBookmarksButton = document.getElementById("closeBookmarksButton");
@@ -326,6 +414,37 @@
         menuContent.style.left = "0px"; // Show the burger menu
       }
 
+      // Get references to the Community Feed screen and its buttons
+      const communityFeedScreen = document.getElementById("communityFeedScreen");
+      const closeCommunityFeedButton = document.getElementById("closeCommunityFeedButton");
+      const postCommunityMessageButton = document.getElementById("postCommunityMessageButton");
+      const communityInput = document.getElementById("communityInput");
+
+      // Function to open the Community Feed screen
+      function openCommunityFeedScreen() {
+        communityFeedScreen.style.left = "0"; // Slide in the Community Feed screen
+        menuContent.style.left = "-295px"; // Hide the burger menu
+      }
+
+      // Function to close the Community Feed screen and return to the burger menu
+      function closeCommunityFeedScreen() {
+        communityFeedScreen.style.left = "-295px"; // Slide out the Community Feed screen
+        menuContent.style.left = "0px"; // Show the burger menu
+      }
+
+      // Function to handle posting a new community message
+      function postCommunityMessage() {
+        const message = communityInput.value.trim(); // Get the input value and trim whitespace
+        if (message) {
+          communityPosts.push(message); // Add the message to the array
+          saveCommunityPosts(); // Save the updated posts to localStorage
+          updateCommunityFeedList(); // Update the list in the Community Feed screen
+          communityInput.value = ""; // Clear the input field
+        } else {
+          alert("Please write a message before posting.");
+        }
+      }
+
       // Attach event listener to the "Bookmarks" link in the burger menu
       document.querySelector('a[href="#bookmarks"]').addEventListener("click", (e) => {
         e.preventDefault(); // Prevent default link behavior
@@ -343,6 +462,18 @@
 
       // Attach event listener to the close button in the previously visited screen
       closePreviouslyVisitedButton.addEventListener("click", closePreviouslyVisitedScreen);
+
+      // Attach event listener to the "Community Feed" link in the burger menu
+      document.querySelector('a[href="#communityFeed"]').addEventListener("click", (e) => {
+        e.preventDefault(); // Prevent default link behavior
+        openCommunityFeedScreen(); // Open the Community Feed screen
+      });
+
+      // Attach event listener to the close button in the Community Feed screen
+      closeCommunityFeedButton.addEventListener("click", closeCommunityFeedScreen);
+
+      // Attach event listener to the post button in the Community Feed screen
+      postCommunityMessageButton.addEventListener("click", postCommunityMessage);
 
       // Load ArcGIS modules
       let parksLayer; // Declare globally
@@ -530,6 +661,9 @@
 
         // Load previously visited locations from localStorage when the app starts
         loadPreviouslyVisited();
+
+        // Load community posts from localStorage when the app starts
+        loadCommunityPosts();
         
         // Update the renderer to reflect the saved lists
         updateRenderer();
