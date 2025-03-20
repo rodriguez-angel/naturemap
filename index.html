@@ -262,6 +262,8 @@
     <div id="communityFeedScreen">
       <button id="closeCommunityFeedButton">Back</button>
       <h2>Community Feed</h2>
+      <textarea id="communityInput" placeholder="Visited before? Let others know how it went!"></textarea>
+      <button id="postCommunityMessageButton">Post</button>
       <ul id="communityFeedList"></ul> <!-- List to display community posts -->
     </div>
 
@@ -355,26 +357,11 @@
       let communityPosts = [];
 
       // Function to load community posts from localStorage
-      async function loadCommunityPosts() {
-        const featureLayerUrl =
-          "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_6d4009b4475d48f5847214ac894b911f_results/FeatureServer/0/query";
-      
-        try {
-          const response = await fetch(
-            `${featureLayerUrl}?where=1=1&outFields=park_name,message&f=json`
-          );
-          if (response.ok) {
-            const data = await response.json();
-            communityPosts = data.features.map((feature) => ({
-              parkName: feature.attributes.park_name, // Map "park_name" to "parkName"
-              message: feature.attributes.message, // Map "message" to "message"
-            }));
-            updateCommunityFeedList(); // Update the community feed list in the UI
-          } else {
-            console.error("Failed to load community posts:", response.statusText);
-          }
-        } catch (error) {
-          console.error("Error loading community posts:", error);
+      function loadCommunityPosts() {
+        const savedPosts = localStorage.getItem("communityPosts");
+        if (savedPosts) {
+          communityPosts = JSON.parse(savedPosts); // Parse the saved JSON string into an array
+          updateCommunityFeedList(); // Update the community feed list in the UI
         }
       }
 
@@ -388,28 +375,11 @@
         const communityFeedList = document.getElementById("communityFeedList");
         communityFeedList.innerHTML = ""; // Clear the list
 
-        communityPosts.forEach((post, index) => {
+        communityPosts.forEach((post) => {
           const listItem = document.createElement("li");
-          listItem.innerHTML = `
-            <strong>${post.parkName}:</strong> ${post.message}
-            <button onclick="removeCommunityPost(${index})" style="
-              background: #ff4d4d;
-              color: white;
-              border: none;
-              padding: 5px;
-              border-radius: 5px;
-              cursor: pointer;
-              margin-left: 10px;
-            ">Remove</button>
-          `;
+          listItem.textContent = post; // Display the post text
           communityFeedList.appendChild(listItem);
         });
-      }
-
-      function removeCommunityPost(index) {
-        communityPosts.splice(index, 1); // Remove the post from the array
-        saveCommunityPosts(); // Save the updated posts to localStorage
-        updateCommunityFeedList(); // Update the list in the Community Feed screen
       }
 
       // Get references to the bookmarks screen and its close button
@@ -447,6 +417,8 @@
       // Get references to the Community Feed screen and its buttons
       const communityFeedScreen = document.getElementById("communityFeedScreen");
       const closeCommunityFeedButton = document.getElementById("closeCommunityFeedButton");
+      const postCommunityMessageButton = document.getElementById("postCommunityMessageButton");
+      const communityInput = document.getElementById("communityInput");
 
       // Function to open the Community Feed screen
       function openCommunityFeedScreen() {
@@ -458,6 +430,19 @@
       function closeCommunityFeedScreen() {
         communityFeedScreen.style.left = "-295px"; // Slide out the Community Feed screen
         menuContent.style.left = "0px"; // Show the burger menu
+      }
+
+      // Function to handle posting a new community message
+      function postCommunityMessage() {
+        const message = communityInput.value.trim(); // Get the input value and trim whitespace
+        if (message) {
+          communityPosts.push(message); // Add the message to the array
+          saveCommunityPosts(); // Save the updated posts to localStorage
+          updateCommunityFeedList(); // Update the list in the Community Feed screen
+          communityInput.value = ""; // Clear the input field
+        } else {
+          alert("Please write a message before posting.");
+        }
       }
 
       // Attach event listener to the "Bookmarks" link in the burger menu
@@ -486,6 +471,9 @@
 
       // Attach event listener to the close button in the Community Feed screen
       closeCommunityFeedButton.addEventListener("click", closeCommunityFeedScreen);
+
+      // Attach event listener to the post button in the Community Feed screen
+      postCommunityMessageButton.addEventListener("click", postCommunityMessage);
 
       // Load ArcGIS modules
       let parksLayer; // Declare globally
@@ -657,44 +645,6 @@
         };
       }
 
-      // Function to submit data to Survey123 and update the Community Feed
-      async function submitToSurvey123(parkName, message) {
-        const survey123Url =
-          "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_6d4009b4475d48f5847214ac894b911f_results/FeatureServer/0/addFeatures";
-        const surveyData = {
-          features: [
-            {
-              attributes: {
-                park_name: parkName,
-                message: message,
-              },
-            },
-          ],
-        };
-
-        try {
-          const response = await fetch(survey123Url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(surveyData),
-          });
-
-          const result = await response.json();
-          if (result.addResults && result.addResults[0].success) {
-            alert(`Message saved for ${parkName}`);
-            loadCommunityPosts(); // Reload the Community Feed
-          } else {
-            console.error("Failed to submit data to Survey123:", result);
-            alert("Failed to save the message. Please try again.");
-          }
-        } catch (error) {
-          console.error("Error submitting data to Survey123:", error);
-          alert("An error occurred while saving the message.");
-        }
-      }
-
       // Function to create the popup content
       function createPopupContent(attributes) {
         const container = document.createElement("div");
@@ -704,6 +654,59 @@
           <p>Type of Greenspace: ${attributes.FEATTYPE}</p>
           <p>Size in Square Mileage: ${attributes.SQMI}</p>
         `;
+
+        // Create the "Add to Bookmarks" button
+        const bookmarkButton = document.createElement("button");
+        bookmarkButton.textContent = "Add to Bookmarks";
+        bookmarkButton.style.background = "#FFD700"; // Yellow color
+        bookmarkButton.style.color = "black";
+        bookmarkButton.style.border = "none";
+        bookmarkButton.style.padding = "5px 10px";
+        bookmarkButton.style.borderRadius = "5px";
+        bookmarkButton.style.cursor = "pointer";
+        bookmarkButton.style.marginRight = "10px"; // Add spacing between buttons
+
+        bookmarkButton.addEventListener("click", () => {
+          const bookmark = {
+            id: attributes.FID, // Use a unique identifier
+            name: attributes.NAME,
+            type: attributes.FEATTYPE,
+            size: attributes.SQMI,
+          };
+
+          // Add the bookmark to the list
+          bookmarks.push(bookmark);
+          saveBookmarks(); // Save the updated bookmarks to localStorage
+          alert(`Bookmarked: ${bookmark.name}`);
+          updateBookmarksList(); // Update the bookmarks list in the menu
+          updateRenderer(); // Update the renderer to reflect the new status
+        });
+
+        // Create the "Add to Previously Visited" button
+        const visitedButton = document.createElement("button");
+        visitedButton.textContent = "Add to Previously Visited";
+        visitedButton.style.background = "#FF4500"; // Red color
+        visitedButton.style.color = "white";
+        visitedButton.style.border = "none";
+        visitedButton.style.padding = "5px 10px";
+        visitedButton.style.borderRadius = "5px";
+        visitedButton.style.cursor = "pointer";
+
+        visitedButton.addEventListener("click", () => {
+          const visited = {
+            id: attributes.FID, // Use the correct field name
+            name: attributes.NAME,
+            type: attributes.FEATTYPE,
+            size: attributes.SQMI,
+          };
+
+          // Add the location to the previously visited list
+          previouslyVisited.push(visited);
+          savePreviouslyVisited(); // Save the updated list to localStorage
+          alert(`Added to Previously Visited: ${visited.name}`);
+          updatePreviouslyVisitedList(); // Update the previously visited list in the menu
+          updateRenderer(); // Update the renderer to reflect the new status
+        });
 
         // Create the text box for user input
         const inputBox = document.createElement("textarea");
@@ -733,19 +736,14 @@
           }
         });
 
-        // Append the input box and button to the container
+        // Append the buttons and input box to the container
+        container.appendChild(bookmarkButton);
+        container.appendChild(visitedButton);
         container.appendChild(inputBox);
         container.appendChild(saveButton);
 
         return container;
       }
-
-      // Update the popup template for parks
-      const popupParks = {
-        title: "{NAME}", // Display the name of the park
-        collapseEnabled: true, // Allow collapsing the popup
-        content: (feature) => createPopupContent(feature.graphic.attributes),
-      };
     </script>
   </body>
 </html>
