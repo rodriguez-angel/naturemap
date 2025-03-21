@@ -355,6 +355,12 @@
           zoom: 12 // Initial zoom level
         });
 
+        // Move the default zoom buttons down to avoid overlap with the burger menu
+        view.ui.move("zoom", "top-left");
+        view.ui.padding = {
+          top: 50 // Add padding to shift the zoom buttons down
+        };
+
         // Create a feature layer from a feature service
         const layer = new FeatureLayer({ 
           url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer"
@@ -520,7 +526,8 @@
 
         // Add the Locate widget to the top left corner of the view
         view.ui.add(locateBtn, {
-          position: "top-left"
+          position: "top-left",
+          index: 1 // Shift down to avoid overlap with the burger menu
         });
 
         // Create the Search widget
