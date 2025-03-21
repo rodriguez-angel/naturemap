@@ -710,6 +710,28 @@
               <strong>${parkName}</strong><br>
               <p>${notes}</p>
             `;
+
+            // Create the "Remove" button
+            const removeButton = document.createElement("button");
+            removeButton.textContent = "Remove";
+            removeButton.style.marginTop = "5px";
+            removeButton.style.background = "#ff4d4d"; // Red color
+            removeButton.style.color = "white";
+            removeButton.style.border = "none";
+            removeButton.style.padding = "5px 10px";
+            removeButton.style.borderRadius = "5px";
+            removeButton.style.cursor = "pointer";
+
+            // Add event listener to remove the note
+            removeButton.addEventListener("click", () => {
+              localStorage.removeItem(key); // Remove the note from localStorage
+              loadNotesPage(); // Reload the Notes page to reflect the changes
+            });
+
+            // Append the remove button to the list item
+            listItem.appendChild(removeButton);
+
+            // Append the list item to the notes list
             notesList.appendChild(listItem);
           }
         }
