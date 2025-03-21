@@ -398,6 +398,7 @@
       // Attach event listener to the "Notes" link in the burger menu
       document.querySelector('a[href="#notes"]').addEventListener("click", (e) => {
         e.preventDefault(); // Prevent default link behavior
+        loadNotesPage(); // Load the notes page content
         openNotesScreen(); // Open the notes screen
       });
 
@@ -507,6 +508,31 @@
               updatePreviouslyVisitedList(); // Update the previously visited list in the menu
               updateRenderer(); // Update the renderer to reflect the new status
             });
+
+            // Create the notes text box
+            const notesInput = document.createElement("textarea");
+            notesInput.placeholder = "Notes for this park...";
+            notesInput.style.width = "100%";
+            notesInput.style.height = "100px";
+            notesInput.style.marginTop = "10px";
+            notesInput.style.border = "1px solid #ccc";
+            notesInput.style.borderRadius = "5px";
+            notesInput.style.padding = "5px";
+
+            // Load existing notes for this park from localStorage
+            const savedNotes = localStorage.getItem(`notes_${attributes.NAME}`);
+            if (savedNotes) {
+              notesInput.value = savedNotes;
+            }
+
+            // Save notes to localStorage when the user leaves the text box
+            notesInput.addEventListener("blur", () => {
+              const notes = notesInput.value;
+              localStorage.setItem(`notes_${attributes.NAME}`, notes); // Save notes with the park's NAME as the key
+            });
+
+            // Append the notes text box to the container
+            container.appendChild(notesInput);
 
             // Append the buttons to the container
             container.appendChild(bookmarkButton);
@@ -638,6 +664,49 @@
           },
         };
       }
+
+      // Function to load and display notes in the Notes page
+      function loadNotesPage() {
+        const notesScreen = document.getElementById("notesScreen");
+        notesScreen.innerHTML = `
+          <button id="closeNotesButton">Back</button>
+          <h2>Notes</h2>
+          <ul id="notesList"></ul>
+        `;
+
+        const notesList = document.getElementById("notesList");
+        notesList.style.listStyle = "none";
+        notesList.style.padding = "0";
+
+        // Iterate through localStorage to find all notes
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key.startsWith("notes_")) {
+            const parkName = key.replace("notes_", ""); // Extract the park name
+            const notes = localStorage.getItem(key);
+
+            // Create a list item for each note
+            const listItem = document.createElement("li");
+            listItem.style.marginBottom = "15px";
+            listItem.innerHTML = `
+              <strong>${parkName}</strong><br>
+              <p>${notes}</p>
+            `;
+            notesList.appendChild(listItem);
+          }
+        }
+
+        // Reattach the close button functionality
+        const closeNotesButton = document.getElementById("closeNotesButton");
+        closeNotesButton.addEventListener("click", closeNotesScreen);
+      }
+
+      // Update the event listener for the "Notes" link in the burger menu
+      document.querySelector('a[href="#notes"]').addEventListener("click", (e) => {
+        e.preventDefault(); // Prevent default link behavior
+        loadNotesPage(); // Load the notes page content
+        openNotesScreen(); // Open the notes screen
+      });
     </script>
   </body>
 </html>
