@@ -171,55 +171,6 @@
         margin-bottom: 20px;
       }
 
-      /* Community Feed Screen */
-      #communityFeedScreen {
-        position: fixed;
-        top: 0;
-        left: -295px; /* Fully hidden off-screen */
-        width: 250px;
-        height: 100%;
-        background: white;
-        padding: 20px;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-        transition: left 0.3s ease; /* Smooth sliding effect */
-        z-index: 1001; /* Ensure it appears above other elements */
-      }
-
-      #communityFeedScreen h2 {
-        margin-top: 0;
-      }
-
-      #communityFeedScreen textarea {
-        width: 100%;
-        height: 80px;
-        margin-bottom: 10px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        resize: none;
-      }
-
-      #communityFeedScreen button {
-        background: #0079c1;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-bottom: 20px;
-      }
-
-      #communityFeedScreen ul {
-        list-style: none;
-        padding: 0;
-      }
-
-      #communityFeedScreen ul li {
-        margin: 15px 0;
-        border-bottom: 1px solid #ccc;
-        padding-bottom: 10px;
-      }
-
       /* Style the popup's main container */
       .esri-popup__main-container {
         border-radius: 10px !important; /* Round the corners */
@@ -239,7 +190,6 @@
         <ul>
           <li><a href="#bookmarks">Bookmarks</a></li>
           <li><a href="#previouslyVisited">Previously Visited</a></li>
-          <li><a href="#communityFeed">Community Feed</a></li> <!-- New Community Feed link -->
         </ul>
       </div>
     </div>
@@ -256,13 +206,6 @@
       <button id="closePreviouslyVisitedButton">Back</button>
       <h2>Previously Visited Locations</h2>
       <ul id="previouslyVisitedList"></ul> <!-- List to display previously visited locations -->
-    </div>
-
-    <!-- Community Feed Screen -->
-    <div id="communityFeedScreen">
-      <button id="closeCommunityFeedButton">Back</button>
-      <h2>Community Feed</h2>
-      <ul id="communityFeedList"></ul> <!-- List to display community posts -->
     </div>
 
     <!-- Div element to hold the map view -->
@@ -351,35 +294,6 @@
         updatePreviouslyVisitedList(); // Update the list in the UI
       }
 
-      // Array to store community posts
-      let communityPosts = [];
-
-      // Function to load community posts from localStorage
-      function loadCommunityPosts() {
-        const savedPosts = localStorage.getItem("communityPosts");
-        if (savedPosts) {
-          communityPosts = JSON.parse(savedPosts); // Parse the saved JSON string into an array
-          updateCommunityFeedList(); // Update the community feed list in the UI
-        }
-      }
-
-      // Function to save community posts to localStorage
-      function saveCommunityPosts() {
-        localStorage.setItem("communityPosts", JSON.stringify(communityPosts)); // Convert the array to a JSON string
-      }
-
-      // Function to update the community feed list in the UI
-      function updateCommunityFeedList() {
-        const communityFeedList = document.getElementById("communityFeedList");
-        communityFeedList.innerHTML = ""; // Clear the list
-
-        communityPosts.forEach((post) => {
-          const listItem = document.createElement("li");
-          listItem.textContent = post; // Display the post text
-          communityFeedList.appendChild(listItem);
-        });
-      }
-
       // Get references to the bookmarks screen and its close button
       const bookmarksScreen = document.getElementById("bookmarksScreen");
       const closeBookmarksButton = document.getElementById("closeBookmarksButton");
@@ -412,22 +326,6 @@
         menuContent.style.left = "0px"; // Show the burger menu
       }
 
-      // Get references to the Community Feed screen and its buttons
-      const communityFeedScreen = document.getElementById("communityFeedScreen");
-      const closeCommunityFeedButton = document.getElementById("closeCommunityFeedButton");
-
-      // Function to open the Community Feed screen
-      function openCommunityFeedScreen() {
-        communityFeedScreen.style.left = "0"; // Slide in the Community Feed screen
-        menuContent.style.left = "-295px"; // Hide the burger menu
-      }
-
-      // Function to close the Community Feed screen and return to the burger menu
-      function closeCommunityFeedScreen() {
-        communityFeedScreen.style.left = "-295px"; // Slide out the Community Feed screen
-        menuContent.style.left = "0px"; // Show the burger menu
-      }
-
       // Attach event listener to the "Bookmarks" link in the burger menu
       document.querySelector('a[href="#bookmarks"]').addEventListener("click", (e) => {
         e.preventDefault(); // Prevent default link behavior
@@ -445,15 +343,6 @@
 
       // Attach event listener to the close button in the previously visited screen
       closePreviouslyVisitedButton.addEventListener("click", closePreviouslyVisitedScreen);
-
-      // Attach event listener to the "Community Feed" link in the burger menu
-      document.querySelector('a[href="#communityFeed"]').addEventListener("click", (e) => {
-        e.preventDefault(); // Prevent default link behavior
-        openCommunityFeedScreen(); // Open the Community Feed screen
-      });
-
-      // Attach event listener to the close button in the Community Feed screen
-      closeCommunityFeedButton.addEventListener("click", closeCommunityFeedScreen);
 
       // Load ArcGIS modules
       let parksLayer; // Declare globally
@@ -496,7 +385,75 @@
         const popupParks = {
           title: "{NAME}", // Display the name of the park
           collapseEnabled: true, // Allow collapsing the popup
-          content: (feature) => createPopupContent(feature.graphic.attributes),
+          content: (feature) => {
+            const attributes = feature.graphic.attributes;
+            const container = document.createElement("div");
+
+            // Add the greenspace type and size
+            container.innerHTML = `
+              <p>Type of Greenspace: ${attributes.FEATTYPE}</p>
+              <p>Size in Square Mileage: ${attributes.SQMI}</p>
+            `;
+
+            // Create the "Add to Bookmarks" button
+            const bookmarkButton = document.createElement("button");
+            bookmarkButton.textContent = "Add to Bookmarks";
+            bookmarkButton.style.background = "#FFD700"; // Yellow color
+            bookmarkButton.style.color = "black";
+            bookmarkButton.style.border = "none";
+            bookmarkButton.style.padding = "5px 10px";
+            bookmarkButton.style.borderRadius = "5px";
+            bookmarkButton.style.cursor = "pointer";
+
+            bookmarkButton.addEventListener("click", () => {
+              const bookmark = {
+                id: attributes.FID, // Use a unique identifier
+                name: attributes.NAME,
+                type: attributes.FEATTYPE,
+                size: attributes.SQMI,
+              };
+
+              // Add the bookmark to the list
+              bookmarks.push(bookmark);
+              saveBookmarks(); // Save the updated bookmarks to localStorage
+              alert(`Bookmarked: ${bookmark.name}`);
+              updateBookmarksList(); // Update the bookmarks list in the menu
+              updateRenderer(); // Update the renderer to reflect the new status
+            });
+
+            // Create the "Add to Previously Visited" button
+            const visitedButton = document.createElement("button");
+            visitedButton.textContent = "Add to Previously Visited";
+            visitedButton.style.background = "#FF4500"; // Red color
+            visitedButton.style.color = "white";
+            visitedButton.style.border = "none";
+            visitedButton.style.padding = "5px 10px";
+            visitedButton.style.borderRadius = "5px";
+            visitedButton.style.cursor = "pointer";
+            visitedButton.style.marginLeft = "10px"; // Add spacing between buttons
+
+            visitedButton.addEventListener("click", () => {
+              const visited = {
+                id: attributes.FID, // Use the correct field name
+                name: attributes.NAME,
+                type: attributes.FEATTYPE,
+                size: attributes.SQMI,
+              };
+
+              // Add the location to the previously visited list
+              previouslyVisited.push(visited);
+              savePreviouslyVisited(); // Save the updated list to localStorage
+              alert(`Added to Previously Visited: ${visited.name}`);
+              updatePreviouslyVisitedList(); // Update the previously visited list in the menu
+              updateRenderer(); // Update the renderer to reflect the new status
+            });
+
+            // Append the buttons to the container
+            container.appendChild(bookmarkButton);
+            container.appendChild(visitedButton);
+
+            return container; // Return the container as the popup content
+          },
         };
 
         // Define a renderer for the parks layer
@@ -573,9 +530,6 @@
 
         // Load previously visited locations from localStorage when the app starts
         loadPreviouslyVisited();
-
-        // Load community posts from localStorage when the app starts
-        loadCommunityPosts();
         
         // Update the renderer to reflect the saved lists
         updateRenderer();
@@ -623,146 +577,6 @@
             },
           },
         };
-      }
-
-      // Function to create the popup content
-      function createPopupContent(attributes) {
-        const container = document.createElement("div");
-
-        // Add the greenspace type and size
-        container.innerHTML = `
-          <p>Type of Greenspace: ${attributes.FEATTYPE}</p>
-          <p>Size in Square Mileage: ${attributes.SQMI}</p>
-        `;
-
-        // Create the "Add to Bookmarks" button
-        const bookmarkButton = document.createElement("button");
-        bookmarkButton.textContent = "Add to Bookmarks";
-        bookmarkButton.style.background = "#FFD700"; // Yellow color
-        bookmarkButton.style.color = "black";
-        bookmarkButton.style.border = "none";
-        bookmarkButton.style.padding = "5px 10px";
-        bookmarkButton.style.borderRadius = "5px";
-        bookmarkButton.style.cursor = "pointer";
-        bookmarkButton.style.marginRight = "10px"; // Add spacing between buttons
-
-        bookmarkButton.addEventListener("click", () => {
-          const bookmark = {
-            id: attributes.FID, // Use a unique identifier
-            name: attributes.NAME,
-            type: attributes.FEATTYPE,
-            size: attributes.SQMI,
-          };
-
-          // Add the bookmark to the list
-          bookmarks.push(bookmark);
-          saveBookmarks(); // Save the updated bookmarks to localStorage
-          alert(`Bookmarked: ${bookmark.name}`);
-          updateBookmarksList(); // Update the bookmarks list in the menu
-          updateRenderer(); // Update the renderer to reflect the new status
-        });
-
-        // Create the "Add to Previously Visited" button
-        const visitedButton = document.createElement("button");
-        visitedButton.textContent = "Add to Previously Visited";
-        visitedButton.style.background = "#FF4500"; // Red color
-        visitedButton.style.color = "white";
-        visitedButton.style.border = "none";
-        visitedButton.style.padding = "5px 10px";
-        visitedButton.style.borderRadius = "5px";
-        visitedButton.style.cursor = "pointer";
-
-        visitedButton.addEventListener("click", () => {
-          const visited = {
-            id: attributes.FID, // Use the correct field name
-            name: attributes.NAME,
-            type: attributes.FEATTYPE,
-            size: attributes.SQMI,
-          };
-
-          // Add the location to the previously visited list
-          previouslyVisited.push(visited);
-          savePreviouslyVisited(); // Save the updated list to localStorage
-          alert(`Added to Previously Visited: ${visited.name}`);
-          updatePreviouslyVisitedList(); // Update the previously visited list in the menu
-          updateRenderer(); // Update the renderer to reflect the new status
-        });
-
-        // Create the text box for user input
-        const inputBox = document.createElement("textarea");
-        inputBox.placeholder = "Visited before? Let others know how it went!";
-        inputBox.style.width = "100%";
-        inputBox.style.height = "60px";
-        inputBox.style.marginBottom = "10px";
-        inputBox.style.padding = "5px";
-
-        // Create the "Save to Community Feed" button
-        const saveButton = document.createElement("button");
-        saveButton.textContent = "Save to Community Feed";
-        saveButton.style.background = "#0079c1";
-        saveButton.style.color = "white";
-        saveButton.style.border = "none";
-        saveButton.style.padding = "5px 10px";
-        saveButton.style.borderRadius = "5px";
-        saveButton.style.cursor = "pointer";
-
-        saveButton.addEventListener("click", () => {
-          const message = inputBox.value.trim();
-          if (message) {
-            submitToSurvey123(attributes.NAME, message); // Submit to Survey123
-            inputBox.value = ""; // Clear the input box
-          } else {
-            alert("Please write a message before saving.");
-          }
-        });
-
-        // Append the buttons and input box to the container
-        container.appendChild(bookmarkButton);
-        container.appendChild(visitedButton);
-        container.appendChild(inputBox);
-        container.appendChild(saveButton);
-
-        return container;
-      }
-
-      // Function to submit data to Survey123 and update the Community Feed
-      function submitToSurvey123(parkName, message) {
-        require(["esri/request"], (esriRequest) => {
-          const survey123Url =
-            "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer/0/addFeatures";
-      
-          const surveyData = {
-            features: [
-              {
-                attributes: {
-                  park_name: parkName,
-                  message: message,
-                },
-              },
-            ],
-          };
-      
-          esriRequest(survey123Url, {
-            method: "post",
-            query: {
-              f: "json", // Ensure the response is in JSON format
-            },
-            body: surveyData,
-          })
-            .then((response) => {
-              if (response.data.addResults && response.data.addResults[0].success) {
-                alert(`Message saved for ${parkName}`);
-                loadCommunityPosts(); // Reload the Community Feed
-              } else {
-                console.error("Failed to submit data to Survey123:", response);
-                alert("Failed to save the message. Please try again.");
-              }
-            })
-            .catch((error) => {
-              console.error("Error submitting data to Survey123:", error);
-              alert("An error occurred while saving the message.");
-            });
-        });
       }
     </script>
   </body>
