@@ -305,7 +305,7 @@
       document.querySelector('a[href="#notes"]').addEventListener("click", (e) => {
         e.preventDefault();
         loadNotesPage();
-        openScreen("notesScreen");
+        openNotesScreen();
       });
 
       function openScreen(screenId) {
@@ -676,6 +676,15 @@
 
         notesScreen.style.left = "-295px"; // Slide out the Notes screen
         menuContent.style.left = "0px"; // Show the burger menu
+      }
+
+      // Function to open the Notes screen
+      function openNotesScreen() {
+        const notesScreen = document.getElementById("notesScreen");
+        const menuContent = document.getElementById("menuContent");
+
+        notesScreen.style.left = "0"; // Slide in the Notes screen
+        menuContent.style.left = "-295px"; // Hide the burger menu
       }
     </script>
   </body>
