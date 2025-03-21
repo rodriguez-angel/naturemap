@@ -389,7 +389,7 @@
         // Add the feature layer to the map
         map.add(layer);
       
-        // Define the popup template for parks
+        // Modify the popup content
         const popupParks = {
           title: "{NAME}", // Display the name of the park
           collapseEnabled: true, // Allow collapsing the popup
@@ -397,17 +397,17 @@
             const attributes = feature.graphic.attributes;
             const container = document.createElement("div");
 
-            // Add the greenspace type and size
-            container.innerHTML = `
-              <p>Type of Greenspace: ${attributes.FEATTYPE}</p>
-              <p>Size in Square Mileage: ${attributes.SQMI}</p>
-            `;
+            // Create a flex container for the top row buttons
+            const buttonRow = document.createElement("div");
+            buttonRow.style.display = "flex";
+            buttonRow.style.justifyContent = "space-between";
+            buttonRow.style.marginBottom = "10px";
 
             // Create the "Add to Bookmarks" button
             const bookmarkButton = document.createElement("button");
             bookmarkButton.textContent = "Add to Bookmarks";
             bookmarkButton.style.background = "#FFD700"; // Yellow color
-            bookmarkButton.style.color = "black";
+            bookmarkButton.style.color = "white"; // White text
             bookmarkButton.style.border = "none";
             bookmarkButton.style.padding = "5px 10px";
             bookmarkButton.style.borderRadius = "5px";
@@ -438,7 +438,6 @@
             visitedButton.style.padding = "5px 10px";
             visitedButton.style.borderRadius = "5px";
             visitedButton.style.cursor = "pointer";
-            visitedButton.style.marginLeft = "10px"; // Add spacing between buttons
 
             visitedButton.addEventListener("click", () => {
               const visited = {
@@ -455,6 +454,17 @@
               updatePreviouslyVisitedList(); // Update the previously visited list in the menu
               updateRenderer(); // Update the renderer to reflect the new status
             });
+
+            // Append the buttons to the button row
+            buttonRow.appendChild(bookmarkButton);
+            buttonRow.appendChild(visitedButton);
+
+            // Add the greenspace type and size
+            const infoText = document.createElement("div");
+            infoText.innerHTML = `
+              <p>Type of Greenspace: ${attributes.FEATTYPE}</p>
+              <p>Size in Square Mileage: ${attributes.SQMI}</p>
+            `;
 
             // Create the notes text box
             const notesInput = document.createElement("textarea");
@@ -482,6 +492,7 @@
             saveNotesButton.style.padding = "5px 10px";
             saveNotesButton.style.borderRadius = "5px";
             saveNotesButton.style.cursor = "pointer";
+            saveNotesButton.style.float = "right"; // Align to the right
 
             // Save notes to localStorage when the button is clicked
             saveNotesButton.addEventListener("click", () => {
@@ -496,13 +507,12 @@
               localStorage.setItem(`notes_${attributes.NAME}`, notes); // Save notes with the park's NAME as the key
             });
 
-            // Append the notes text box to the container
-            container.appendChild(notesInput);
+            // Append the elements to the container
+            container.appendChild(buttonRow); // Add the button row at the top
+            container.appendChild(infoText); // Add the greenspace info below the buttons
+            container.appendChild(notesInput); // Add the notes text box
+            container.appendChild(saveNotesButton); // Add the Save Notes button
 
-            // Append the buttons to the container
-            container.appendChild(bookmarkButton);
-            container.appendChild(visitedButton);
-            container.appendChild(saveNotesButton);
             return container; // Return the container as the popup content
           },
         };
