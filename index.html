@@ -266,16 +266,27 @@
             <strong>${location.name}</strong><br>
             Type: ${location.type}<br>
             Size: ${location.size} sq mi
-            <button onclick="removePreviouslyVisited(${index})">Remove</button>
           `;
+
+          // Create the red "X" button
+          const removeButton = document.createElement("button");
+          removeButton.innerHTML = "&#10006;"; // Unicode for "X"
+          removeButton.style.color = "red";
+          removeButton.style.background = "none";
+          removeButton.style.border = "none";
+          removeButton.style.cursor = "pointer";
+          removeButton.style.fontSize = "16px";
+
+          // Add event listener to remove the location
+          removeButton.addEventListener("click", () => {
+            previouslyVisited.splice(index, 1);
+            savePreviouslyVisited();
+            updatePreviouslyVisitedList();
+          });
+
+          listItem.appendChild(removeButton);
           previouslyVisitedList.appendChild(listItem);
         });
-      }
-
-      function removePreviouslyVisited(index) {
-        previouslyVisited.splice(index, 1);
-        savePreviouslyVisited();
-        updatePreviouslyVisitedList();
       }
 
       // Notes Functions
@@ -306,16 +317,14 @@
               <p>${notes}</p>
             `;
 
-            // Create the "Remove" button
+            // Create the red "X" button
             const removeButton = document.createElement("button");
-            removeButton.textContent = "Remove";
-            removeButton.style.marginTop = "5px";
-            removeButton.style.background = "#ff4d4d"; // Red color
-            removeButton.style.color = "white";
+            removeButton.innerHTML = "&#10006;"; // Unicode for "X"
+            removeButton.style.color = "red";
+            removeButton.style.background = "none";
             removeButton.style.border = "none";
-            removeButton.style.padding = "5px 10px";
-            removeButton.style.borderRadius = "5px";
             removeButton.style.cursor = "pointer";
+            removeButton.style.fontSize = "16px";
 
             // Add event listener to remove the note
             removeButton.addEventListener("click", () => {
@@ -323,10 +332,7 @@
               loadNotesPage(); // Reload the Notes page to reflect the changes
             });
 
-            // Append the remove button to the list item
             listItem.appendChild(removeButton);
-
-            // Append the list item to the notes list
             notesList.appendChild(listItem);
           }
         }
@@ -677,16 +683,14 @@
               <p>${notes}</p>
             `;
 
-            // Create the "Remove" button
+            // Create the red "X" button
             const removeButton = document.createElement("button");
-            removeButton.textContent = "Remove";
-            removeButton.style.marginTop = "5px";
-            removeButton.style.background = "#ff4d4d"; // Red color
-            removeButton.style.color = "white";
+            removeButton.innerHTML = "&#10006;"; // Unicode for "X"
+            removeButton.style.color = "red";
+            removeButton.style.background = "none";
             removeButton.style.border = "none";
-            removeButton.style.padding = "5px 10px";
-            removeButton.style.borderRadius = "5px";
             removeButton.style.cursor = "pointer";
+            removeButton.style.fontSize = "16px";
 
             // Add event listener to remove the note
             removeButton.addEventListener("click", () => {
@@ -694,10 +698,7 @@
               loadNotesPage(); // Reload the Notes page to reflect the changes
             });
 
-            // Append the remove button to the list item
             listItem.appendChild(removeButton);
-
-            // Append the list item to the notes list
             notesList.appendChild(listItem);
           }
         }
