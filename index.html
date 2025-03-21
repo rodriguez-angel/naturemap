@@ -139,7 +139,8 @@
 
     <style>
       /* Change the color of the titles in the burger menu */
-      #menuContent ul li {
+      #menuContent ul li a {
+        text-decoration: none;
         color: black; /* Set text color to black */
         font-weight: bold; /* Keep the bold styling */
       }
@@ -223,16 +224,27 @@
             <strong>${bookmark.name}</strong><br>
             Type: ${bookmark.type}<br>
             Size: ${bookmark.size} sq mi
-            <button onclick="removeBookmark(${index})">Remove</button>
           `;
+
+          // Create the red "X" button
+          const removeButton = document.createElement("button");
+          removeButton.innerHTML = "&#10006;"; // Unicode for "X"
+          removeButton.style.color = "red";
+          removeButton.style.background = "none";
+          removeButton.style.border = "none";
+          removeButton.style.cursor = "pointer";
+          removeButton.style.fontSize = "16px";
+
+          // Add event listener to remove the bookmark
+          removeButton.addEventListener("click", () => {
+            bookmarks.splice(index, 1);
+            saveBookmarks();
+            updateBookmarksList();
+          });
+
+          listItem.appendChild(removeButton);
           bookmarksList.appendChild(listItem);
         });
-      }
-
-      function removeBookmark(index) {
-        bookmarks.splice(index, 1);
-        saveBookmarks();
-        updateBookmarksList();
       }
 
       // Previously Visited Functions
