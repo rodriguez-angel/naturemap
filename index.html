@@ -17,33 +17,32 @@
         width: 100%;
       }
 
-      /* Burger Menu */
+      /* Burger Menu Styles */
       #burgerMenu {
         position: absolute;
         top: 90px; 
-        left: 15px; /* Shifted 5px to the right */
+        left: 15px;
         z-index: 1000;
       }
 
       #menuButton {
-        width: 33px; /* Smaller size */
-        height: 33px; /* Smaller size */
-        background: white; /* White background */
-        border: 1px solid #ccc; /* Optional border for better visibility */
+        width: 33px;
+        height: 33px;
+        background: white;
+        border: 1px solid #ccc;
         cursor: pointer;
         display: flex;
         flex-direction: column;
         justify-content: space-evenly;
         align-items: center;
-        padding: 5px; /* Add padding for spacing */
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional shadow for better appearance */
+        padding: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
       }
 
       #menuButton div {
-        width: 80%; /* Smaller width relative to the button */
-        height: 1.5px; /* Thinner lines */
-        background-color: #555; /* Dark gray color for the lines */
-        border-radius: 0; /* Remove rounded corners */
+        width: 80%;
+        height: 1.5px;
+        background-color: #555;
       }
 
       #closeMenuButton {
@@ -80,7 +79,7 @@
 
       #menuContent ul li a {
         text-decoration: none;
-        color: #0079c1;
+        color: black;
         font-weight: bold;
       }
 
@@ -137,15 +136,6 @@
       }
     </style>
 
-    <style>
-      /* Change the color of the titles in the burger menu */
-      #menuContent ul li a {
-        text-decoration: none;
-        color: black; /* Set text color to black */
-        font-weight: bold; /* Keep the bold styling */
-      }
-    </style>
-
     <!-- ArcGIS CSS and JavaScript libraries -->
     <link rel="stylesheet" href="https://js.arcgis.com/4.32/esri/themes/light/main.css" />
     <script src="https://js.arcgis.com/4.32/"></script>
@@ -163,7 +153,7 @@
         <ul>
           <li><a href="#bookmarks">Bookmarks</a></li>
           <li><a href="#previouslyVisited">Previously Visited</a></li>
-          <li><a href="#notes">Notes</a></li> <!-- Add Notes link -->
+          <li><a href="#notes">Notes</a></li>
         </ul>
       </div>
     </div>
@@ -172,13 +162,13 @@
     <div id="bookmarksScreen" class="screen">
       <button id="closeBookmarksButton">Back</button>
       <h2>Bookmarked Locations</h2>
-      <ul id="bookmarksList"></ul> <!-- List to display bookmarks -->
+      <ul id="bookmarksList"></ul>
     </div>
 
     <div id="previouslyVisitedScreen" class="screen">
       <button id="closePreviouslyVisitedButton">Back</button>
       <h2>Previously Visited Locations</h2>
-      <ul id="previouslyVisitedList"></ul> <!-- List to display previously visited locations -->
+      <ul id="previouslyVisitedList"></ul>
     </div>
 
     <div id="notesScreen" class="screen">
@@ -192,30 +182,35 @@
 
     <script>
       // Global Variables
-      let bookmarks = [];
-      let previouslyVisited = [];
+      let bookmarks = []; // Stores bookmarked locations
+      let previouslyVisited = []; // Stores previously visited locations
 
       // Utility Functions
       function saveToLocalStorage(key, data) {
+        // Save data to localStorage
         localStorage.setItem(key, JSON.stringify(data));
       }
 
       function loadFromLocalStorage(key) {
+        // Load data from localStorage
         const data = localStorage.getItem(key);
         return data ? JSON.parse(data) : [];
       }
 
       // Bookmarks Functions
       function loadBookmarks() {
+        // Load bookmarks from localStorage and update the list
         bookmarks = loadFromLocalStorage("bookmarks");
         updateBookmarksList();
       }
 
       function saveBookmarks() {
+        // Save bookmarks to localStorage
         saveToLocalStorage("bookmarks", bookmarks);
       }
 
       function updateBookmarksList() {
+        // Update the bookmarks list in the UI
         const bookmarksList = document.getElementById("bookmarksList");
         bookmarksList.innerHTML = "";
         bookmarks.forEach((bookmark, index) => {
@@ -226,7 +221,7 @@
             Size: ${bookmark.size} sq mi
           `;
 
-          // Create the red "X" button
+          // Create the red "X" button to remove bookmarks
           const removeButton = document.createElement("button");
           removeButton.innerHTML = "&#10006;"; // Unicode for "X"
           removeButton.style.color = "red";
@@ -235,7 +230,7 @@
           removeButton.style.cursor = "pointer";
           removeButton.style.fontSize = "16px";
 
-          // Add event listener to remove the bookmark
+          // Remove bookmark on button click
           removeButton.addEventListener("click", () => {
             bookmarks.splice(index, 1);
             saveBookmarks();
@@ -249,15 +244,18 @@
 
       // Previously Visited Functions
       function loadPreviouslyVisited() {
+        // Load previously visited locations from localStorage
         previouslyVisited = loadFromLocalStorage("previouslyVisited");
         updatePreviouslyVisitedList();
       }
 
       function savePreviouslyVisited() {
+        // Save previously visited locations to localStorage
         saveToLocalStorage("previouslyVisited", previouslyVisited);
       }
 
       function updatePreviouslyVisitedList() {
+        // Update the previously visited list in the UI
         const previouslyVisitedList = document.getElementById("previouslyVisitedList");
         previouslyVisitedList.innerHTML = "";
         previouslyVisited.forEach((location, index) => {
@@ -268,7 +266,7 @@
             Size: ${location.size} sq mi
           `;
 
-          // Create the red "X" button
+          // Create the red "X" button to remove locations
           const removeButton = document.createElement("button");
           removeButton.innerHTML = "&#10006;"; // Unicode for "X"
           removeButton.style.color = "red";
@@ -277,7 +275,7 @@
           removeButton.style.cursor = "pointer";
           removeButton.style.fontSize = "16px";
 
-          // Add event listener to remove the location
+          // Remove location on button click
           removeButton.addEventListener("click", () => {
             previouslyVisited.splice(index, 1);
             savePreviouslyVisited();
@@ -291,6 +289,7 @@
 
       // Notes Functions
       function loadNotesPage() {
+        // Load and display notes in the Notes page
         const notesScreen = document.getElementById("notesScreen");
         notesScreen.innerHTML = `
           <button id="closeNotesButton">Back</button>
@@ -317,7 +316,7 @@
               <p>${notes}</p>
             `;
 
-            // Create the red "X" button
+            // Create the red "X" button to remove notes
             const removeButton = document.createElement("button");
             removeButton.innerHTML = "&#10006;"; // Unicode for "X"
             removeButton.style.color = "red";
@@ -326,7 +325,7 @@
             removeButton.style.cursor = "pointer";
             removeButton.style.fontSize = "16px";
 
-            // Add event listener to remove the note
+            // Remove note on button click
             removeButton.addEventListener("click", () => {
               localStorage.removeItem(key); // Remove the note from localStorage
               loadNotesPage(); // Reload the Notes page to reflect the changes
@@ -360,11 +359,13 @@
       });
 
       function openScreen(screenId) {
+        // Open a specific screen and hide the burger menu
         document.getElementById(screenId).style.left = "0";
         document.getElementById("menuContent").style.left = "-295px";
       }
 
       function closeScreen(screenId) {
+        // Close a specific screen and show the burger menu
         document.getElementById(screenId).style.left = "-295px";
         document.getElementById("menuContent").style.left = "0";
       }
@@ -374,359 +375,8 @@
       document.getElementById("closeNotesButton").addEventListener("click", () => closeScreen("notesScreen"));
 
       // Initialize App
-      loadBookmarks();
-      loadPreviouslyVisited();
-
-      // Load ArcGIS modules
-      let parksLayer; // Declare globally
-
-      require([
-        "esri/config", 
-        "esri/Map", 
-        "esri/views/MapView", 
-        "esri/widgets/Locate", 
-        "esri/widgets/Search",
-        "esri/widgets/Popup",
-        "esri/layers/FeatureLayer"
-      ], (esriConfig, Map, MapView, Locate, Search, Popup, FeatureLayer) => {
-        
-        // Set the API key for accessing ArcGIS services
-        esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurMDO2Lvg3fqfK_WEnH5iFTMBraaeXiSHJGRbnr1Zs4Isr4QgtEWFLCgjEyJUqKPiF1twAE7x6mEbufhgGS8kDfdHZrm-MxCYabUC4R4l1qsZ41mzL6Or0hSE4dkXf_yST7bEx29lJkvmLZa5L6lxxauEogtg-aafqVSunqkSD9MFqBnsg6KGrMADv7SZEjDdrTjOkdGIkev0d6XLanocxs2I9M7C0otsi3fKjt2gtQYJAT1_mPb6eiGn";
-
-        // Define the basemap
-        const map = new Map({
-          basemap: "satellite" // Use the satellite basemap
-        });
-
-        // Create the MapView
-        const view = new MapView({
-          container: "viewDiv", // Reference to the DOM node that will contain the view
-          map: map, // References the map object
-          center: [-82.3248, 29.6516], // Initial center point (Gainesville, Florida)
-          zoom: 12 // Initial zoom level
-        
-        });
-
-        // Create a feature layer from a feature service
-        const layer = new FeatureLayer({ 
-          url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer"
-        });
-
-        // Add the feature layer to the map
-        map.add(layer);
-      
-        // Modify the popup content
-        const popupParks = {
-          title: "{NAME}", // Display the name of the park
-          collapseEnabled: true, // Allow collapsing the popup
-          content: (feature) => {
-            const attributes = feature.graphic.attributes;
-            const container = document.createElement("div");
-
-            // Create a flex container for the top row buttons
-            const buttonRow = document.createElement("div");
-            buttonRow.style.display = "flex";
-            buttonRow.style.justifyContent = "space-between";
-            buttonRow.style.marginBottom = "10px";
-
-            // Create the "Add to Bookmarks" button
-            const bookmarkButton = document.createElement("button");
-            bookmarkButton.textContent = "Add to Bookmarks";
-            bookmarkButton.style.background = "#FFD700"; // Yellow color
-            bookmarkButton.style.color = "white"; // White text
-            bookmarkButton.style.border = "none";
-            bookmarkButton.style.padding = "5px 10px";
-            bookmarkButton.style.borderRadius = "5px";
-            bookmarkButton.style.cursor = "pointer";
-
-            // Modify the "Add to Bookmarks" button event listener
-            bookmarkButton.addEventListener("click", () => {
-              const bookmark = {
-                id: attributes.FID, // Use a unique identifier
-                name: attributes.NAME,
-                type: attributes.FEATTYPE,
-                size: attributes.SQMI,
-              };
-
-              // Add the bookmark to the list
-              bookmarks.push(bookmark);
-              saveBookmarks(); // Save the updated bookmarks to localStorage
-              updateBookmarksList(); // Update the bookmarks list in the menu
-              updateRenderer(); // Update the renderer to reflect the new status
-            });
-
-            // Create the "Add to Previously Visited" button
-            const visitedButton = document.createElement("button");
-            visitedButton.textContent = "Add to Previously Visited";
-            visitedButton.style.background = "#FF4500"; // Red color
-            visitedButton.style.color = "white";
-            visitedButton.style.border = "none";
-            visitedButton.style.padding = "5px 10px";
-            visitedButton.style.borderRadius = "5px";
-            visitedButton.style.cursor = "pointer";
-
-            // Modify the "Add to Previously Visited" button event listener
-            visitedButton.addEventListener("click", () => {
-              const visited = {
-                id: attributes.FID, // Use the correct field name
-                name: attributes.NAME,
-                type: attributes.FEATTYPE,
-                size: attributes.SQMI,
-              };
-
-              // Add the location to the previously visited list
-              previouslyVisited.push(visited);
-              savePreviouslyVisited(); // Save the updated list to localStorage
-              updatePreviouslyVisitedList(); // Update the previously visited list in the menu
-              updateRenderer(); // Update the renderer to reflect the new status
-            });
-
-            // Append the buttons to the button row
-            buttonRow.appendChild(bookmarkButton);
-            buttonRow.appendChild(visitedButton);
-
-            // Add the greenspace type and size
-            const infoText = document.createElement("div");
-            infoText.innerHTML = `
-              <p>Type of Greenspace: ${attributes.FEATTYPE}</p>
-              <p>Size in Square Mileage: ${attributes.SQMI}</p>
-            `;
-
-            // Create the notes text box
-            const notesInput = document.createElement("textarea");
-            notesInput.placeholder = "Notes for this park...";
-            notesInput.style.width = "100%";
-            notesInput.style.height = "100px";
-            notesInput.style.marginTop = "10px";
-            notesInput.style.border = "1px solid #ccc";
-            notesInput.style.borderRadius = "5px";
-            notesInput.style.padding = "5px";
-
-            // Load existing notes for this park from localStorage
-            const savedNotes = localStorage.getItem(`notes_${attributes.NAME}`);
-            if (savedNotes) {
-              notesInput.value = savedNotes;
-            }
-
-            // Create the "Save Notes" button
-            const saveNotesButton = document.createElement("button");
-            saveNotesButton.textContent = "Save Notes";
-            saveNotesButton.style.marginTop = "10px";
-            saveNotesButton.style.background = "#0079c1"; // Blue color
-            saveNotesButton.style.color = "white";
-            saveNotesButton.style.border = "none";
-            saveNotesButton.style.padding = "5px 10px";
-            saveNotesButton.style.borderRadius = "5px";
-            saveNotesButton.style.cursor = "pointer";
-            saveNotesButton.style.float = "right"; // Align to the right
-
-            // Save notes to localStorage when the button is clicked
-            saveNotesButton.addEventListener("click", () => {
-              const notes = notesInput.value;
-              localStorage.setItem(`notes_${attributes.NAME}`, notes); // Save notes with the park's NAME as the key
-              alert(`Notes saved for ${attributes.NAME}`); // Alert the user that notes have been saved
-            });
-
-            // Append the elements to the container
-            container.appendChild(buttonRow); // Add the button row at the top
-            container.appendChild(infoText); // Add the greenspace info below the buttons
-            container.appendChild(notesInput); // Add the notes text box
-            container.appendChild(saveNotesButton); // Add the Save Notes button
-
-            return container; // Return the container as the popup content
-          },
-        };
-
-        // Define a renderer for the parks layer
-        const parksRenderer = {
-          type: "simple", // Simple renderer
-          symbol: {
-            type: "simple-fill", // Fill symbol for polygons
-            color: [34, 139, 34, 0.8], // Green fill color with transparency
-            outline: {
-              color: [0, 0, 0, 1], // Black outline
-              width: 0.6 // Outline width
-            }
-          }
-        };
-
-        // Create a feature layer for parks (polygon layer)
-        parksLayer = new FeatureLayer({
-          url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/MyData/FeatureServer",
-          outFields: ["*"], // Retrieve all fields for use in pop-ups or filtering
-          popupTemplate: popupParks, // Apply the popup template
-          renderer: parksRenderer // Apply the renderer to the parks layer
-        });
-
-        // Debugging: Check if the layer loads successfully
-        parksLayer.when(() => {
-          console.log("Parks layer loaded successfully:", parksLayer);
-          updateRenderer(); // Update the renderer after the layer is loaded
-        }, (error) => {
-          console.error("Error loading parks layer:", error);
-        });
-
-        // Add the parks layer to the map
-        map.add(parksLayer);
-        
-        // Create the Search widget
-        const searchWidget = new Search({
-          view: view, // Attach the Search widget to the view
-          locationEnabled: true // Enable location-based search
-        });
-
-        // Add the Search widget to the top right corner of the view
-        view.ui.add(searchWidget, {
-          position: "top-right"
-        });
-
-        // Burger menu functionality
-        const menuButton = document.getElementById("menuButton");
-        const menuContent = document.getElementById("menuContent");
-        const closeMenuButton = document.getElementById("closeMenuButton");
-
-        // Ensure the burger menu is hidden when the app starts
-        menuContent.style.left = "-295px";
-
-        menuButton.addEventListener("click", () => {
-          menuContent.style.left = "0px"; // Show the menu
-        });
-
-        closeMenuButton.addEventListener("click", () => {
-          menuContent.style.left = "-295px"; // Hide the menu
-        });
-
-        // Load bookmarks from localStorage when the app starts
-        loadBookmarks();
-
-        // Load previously visited locations from localStorage when the app starts
-        loadPreviouslyVisited();
-        
-        // Update the renderer to reflect the saved lists
-        updateRenderer();
-      });
-
-      function updateRenderer() {
-        if (!parksLayer) return; // Ensure parksLayer is loaded
-
-        const bookmarkedIds = bookmarks.map((b) => b.id); // Get IDs of bookmarked parks
-        const visitedIds = previouslyVisited.map((v) => v.id); // Get IDs of previously visited parks
-
-        parksLayer.renderer = {
-          type: "unique-value", // Use a unique value renderer
-          field: "FID", // Use the unique identifier field
-          uniqueValueInfos: [
-            ...bookmarkedIds.map((id) => ({
-              value: id,
-              symbol: {
-                type: "simple-fill",
-                color: [255, 215, 0, 0.8], // Yellow color for bookmarks
-                outline: {
-                  color: [0, 0, 0, 1],
-                  width: 0.6,
-                },
-              },
-            })),
-            ...visitedIds.map((id) => ({
-              value: id,
-              symbol: {
-                type: "simple-fill",
-                color: [255, 69, 0, 0.8], // Red color for previously visited
-                outline: {
-                  color: [0, 0, 0, 1],
-                  width: 0.6,
-                },
-              },
-            })),
-          ],
-          defaultSymbol: {
-            type: "simple-fill",
-            color: [34, 139, 34, 0.8], // Green color for default
-            outline: {
-              color: [0, 0, 0, 1],
-              width: 0.6,
-            },
-          },
-        };
-      }
-
-      // Function to load and display notes in the Notes page
-      function loadNotesPage() {
-        const notesScreen = document.getElementById("notesScreen");
-        notesScreen.innerHTML = `
-          <button id="closeNotesButton">Back</button>
-          <h2>Notes</h2>
-          <ul id="notesList"></ul>
-        `;
-
-        const notesList = document.getElementById("notesList");
-        notesList.style.listStyle = "none";
-        notesList.style.padding = "0";
-
-        // Iterate through localStorage to find all notes
-        for (let i = 0; i < localStorage.length; i++) {
-          const key = localStorage.key(i);
-          if (key.startsWith("notes_")) {
-            const parkName = key.replace("notes_", ""); // Extract the park name
-            const notes = localStorage.getItem(key);
-
-            // Create a list item for each note
-            const listItem = document.createElement("li");
-            listItem.style.marginBottom = "15px";
-            listItem.innerHTML = `
-              <strong>${parkName}</strong><br>
-              <p>${notes}</p>
-            `;
-
-            // Create the red "X" button
-            const removeButton = document.createElement("button");
-            removeButton.innerHTML = "&#10006;"; // Unicode for "X"
-            removeButton.style.color = "red";
-            removeButton.style.background = "none";
-            removeButton.style.border = "none";
-            removeButton.style.cursor = "pointer";
-            removeButton.style.fontSize = "16px";
-
-            // Add event listener to remove the note
-            removeButton.addEventListener("click", () => {
-              localStorage.removeItem(key); // Remove the note from localStorage
-              loadNotesPage(); // Reload the Notes page to reflect the changes
-            });
-
-            listItem.appendChild(removeButton);
-            notesList.appendChild(listItem);
-          }
-        }
-
-        // Reattach the close button functionality
-        const closeNotesButton = document.getElementById("closeNotesButton");
-        closeNotesButton.addEventListener("click", closeNotesScreen);
-      }
-
-      // Update the event listener for the "Notes" link in the burger menu
-      document.querySelector('a[href="#notes"]').addEventListener("click", (e) => {
-        e.preventDefault(); // Prevent default link behavior
-        loadNotesPage(); // Load the notes page content
-        openNotesScreen(); // Open the notes screen
-      });
-
-      // Function to close the Notes screen and return to the burger menu
-      function closeNotesScreen() {
-        const notesScreen = document.getElementById("notesScreen");
-        const menuContent = document.getElementById("menuContent");
-
-        notesScreen.style.left = "-295px"; // Slide out the Notes screen
-        menuContent.style.left = "0px"; // Show the burger menu
-      }
-
-      // Function to open the Notes screen
-      function openNotesScreen() {
-        const notesScreen = document.getElementById("notesScreen");
-        const menuContent = document.getElementById("menuContent");
-
-        notesScreen.style.left = "0"; // Slide in the Notes screen
-        menuContent.style.left = "-295px"; // Hide the burger menu
-      }
+      loadBookmarks(); // Load bookmarks on app start
+      loadPreviouslyVisited(); // Load previously visited locations on app start
     </script>
   </body>
 </html>
