@@ -357,9 +357,12 @@
 
         // Move the default zoom buttons down to avoid overlap with the burger menu
         view.ui.move("zoom", "top-left");
-        view.ui.padding = {
-          top: 50 // Add padding to shift the zoom buttons down
-        };
+
+        // Add padding specifically for the zoom buttons
+        const zoomElement = view.ui.find("zoom");
+        if (zoomElement) {
+          zoomElement.style.marginTop = "50px"; // Adjust the value as needed
+        }
 
         // Create a feature layer from a feature service
         const layer = new FeatureLayer({ 
