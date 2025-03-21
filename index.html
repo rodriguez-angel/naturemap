@@ -137,6 +137,14 @@
       }
     </style>
 
+    <style>
+      /* Change the color of the titles in the burger menu */
+      #menuContent ul li {
+        color: black; /* Set text color to black */
+        font-weight: bold; /* Keep the bold styling */
+      }
+    </style>
+
     <!-- ArcGIS CSS and JavaScript libraries -->
     <link rel="stylesheet" href="https://js.arcgis.com/4.32/esri/themes/light/main.css" />
     <script src="https://js.arcgis.com/4.32/"></script>
@@ -498,7 +506,6 @@
             saveNotesButton.addEventListener("click", () => {
               const notes = notesInput.value;
               localStorage.setItem(`notes_${attributes.NAME}`, notes); // Save notes with the park's NAME as the key
-              alert(`Notes saved for ${attributes.NAME}`);
             });
 
             // Save notes to localStorage when the user leaves the text box
