@@ -413,6 +413,7 @@
             bookmarkButton.style.borderRadius = "5px";
             bookmarkButton.style.cursor = "pointer";
 
+            // Modify the "Add to Bookmarks" button event listener
             bookmarkButton.addEventListener("click", () => {
               const bookmark = {
                 id: attributes.FID, // Use a unique identifier
@@ -424,7 +425,6 @@
               // Add the bookmark to the list
               bookmarks.push(bookmark);
               saveBookmarks(); // Save the updated bookmarks to localStorage
-              alert(`Bookmarked: ${bookmark.name}`);
               updateBookmarksList(); // Update the bookmarks list in the menu
               updateRenderer(); // Update the renderer to reflect the new status
             });
@@ -439,6 +439,7 @@
             visitedButton.style.borderRadius = "5px";
             visitedButton.style.cursor = "pointer";
 
+            // Modify the "Add to Previously Visited" button event listener
             visitedButton.addEventListener("click", () => {
               const visited = {
                 id: attributes.FID, // Use the correct field name
@@ -450,7 +451,6 @@
               // Add the location to the previously visited list
               previouslyVisited.push(visited);
               savePreviouslyVisited(); // Save the updated list to localStorage
-              alert(`Added to Previously Visited: ${visited.name}`);
               updatePreviouslyVisitedList(); // Update the previously visited list in the menu
               updateRenderer(); // Update the renderer to reflect the new status
             });
