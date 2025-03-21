@@ -527,13 +527,6 @@
               alert(`Notes saved for ${attributes.NAME}`); // Alert the user that notes have been saved
             });
 
-            // Save notes to localStorage when the user leaves the text box
-            notesInput.addEventListener("blur", () => {
-              const notes = notesInput.value;
-              localStorage.setItem(`notes_${attributes.NAME}`, notes); // Save notes with the park's NAME as the key
-              alert(`Notes saved for ${attributes.NAME}`); // Alert the user that notes have been saved
-            });
-
             // Append the elements to the container
             container.appendChild(buttonRow); // Add the button row at the top
             container.appendChild(infoText); // Add the greenspace info below the buttons
