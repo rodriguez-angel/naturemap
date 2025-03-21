@@ -262,8 +262,6 @@
     <div id="communityFeedScreen">
       <button id="closeCommunityFeedButton">Back</button>
       <h2>Community Feed</h2>
-      <textarea id="communityInput" placeholder="Visited before? Let others know how it went!"></textarea>
-      <button id="postCommunityMessageButton">Post</button>
       <ul id="communityFeedList"></ul> <!-- List to display community posts -->
     </div>
 
@@ -772,7 +770,10 @@
             .then((response) => {
               if (response.data.addResults && response.data.addResults[0].success) {
                 alert(`Message saved for ${parkName}`);
-                loadCommunityPosts(); // Reload the Community Feed
+                // Add the message to the Community Feed
+                communityPosts.push(`${parkName}: ${message}`);
+                saveCommunityPosts(); // Save the updated posts to localStorage
+                updateCommunityFeedList(); // Update the Community Feed
               } else {
                 console.error("Failed to submit data to Survey123:", response);
                 alert("Failed to save the message. Please try again.");
