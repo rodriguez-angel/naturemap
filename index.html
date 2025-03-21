@@ -729,7 +729,7 @@
       function submitToSurvey123(parkName, message) {
         require(["esri/request"], (esriRequest) => {
           const survey123Url =
-            "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer/0/addFeatures";
+            "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_6d4009b4475d48f5847214ac894b911f_results/FeatureServer";
       
           const surveyData = {
             features: [
@@ -747,7 +747,8 @@
             query: {
               f: "json", // Ensure the response is in JSON format
             },
-            body: surveyData,
+            body: JSON.stringify(surveyData), // Ensure the body is stringified
+            responseType: "json", // Expect a JSON response
           })
             .then((response) => {
               if (response.data.addResults && response.data.addResults[0].success) {
