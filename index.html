@@ -175,6 +175,34 @@
       .esri-popup__main-container {
         border-radius: 10px !important; /* Round the corners */
       }
+
+      /* Notes Screen */
+      #notesScreen {
+        position: fixed;
+        top: 0;
+        left: -295px; /* Fully hidden off-screen */
+        width: 250px;
+        height: 100%;
+        background: white;
+        padding: 20px;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+        transition: left 0.3s ease; /* Smooth sliding effect */
+        z-index: 1001; /* Ensure it appears above other elements */
+      }
+
+      #notesScreen h2 {
+        margin-top: 0;
+      }
+
+      #closeNotesButton {
+        background: #0079c1;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 20px;
+      }
     </style>
 
     <!-- ArcGIS CSS and JavaScript libraries -->
@@ -190,6 +218,7 @@
         <ul>
           <li><a href="#bookmarks">Bookmarks</a></li>
           <li><a href="#previouslyVisited">Previously Visited</a></li>
+          <li><a href="#notes">Notes</a></li> <!-- Add Notes link -->
         </ul>
       </div>
     </div>
@@ -206,6 +235,12 @@
       <button id="closePreviouslyVisitedButton">Back</button>
       <h2>Previously Visited Locations</h2>
       <ul id="previouslyVisitedList"></ul> <!-- List to display previously visited locations -->
+    </div>
+
+    <!-- Notes Screen -->
+    <div id="notesScreen">
+      <button id="closeNotesButton">Back</button>
+      <h2>Notes</h2>
     </div>
 
     <!-- Div element to hold the map view -->
@@ -343,6 +378,31 @@
 
       // Attach event listener to the close button in the previously visited screen
       closePreviouslyVisitedButton.addEventListener("click", closePreviouslyVisitedScreen);
+
+      // Get references to the notes screen and its close button
+      const notesScreen = document.getElementById("notesScreen");
+      const closeNotesButton = document.getElementById("closeNotesButton");
+
+      // Function to open the notes screen
+      function openNotesScreen() {
+        notesScreen.style.left = "0"; // Slide in the notes screen
+        menuContent.style.left = "-295px"; // Hide the burger menu
+      }
+
+      // Function to close the notes screen and return to the burger menu
+      function closeNotesScreen() {
+        notesScreen.style.left = "-295px"; // Slide out the notes screen
+        menuContent.style.left = "0px"; // Show the burger menu
+      }
+
+      // Attach event listener to the "Notes" link in the burger menu
+      document.querySelector('a[href="#notes"]').addEventListener("click", (e) => {
+        e.preventDefault(); // Prevent default link behavior
+        openNotesScreen(); // Open the notes screen
+      });
+
+      // Attach event listener to the close button in the notes screen
+      closeNotesButton.addEventListener("click", closeNotesScreen);
 
       // Load ArcGIS modules
       let parksLayer; // Declare globally
