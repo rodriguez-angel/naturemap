@@ -220,43 +220,6 @@
         padding-bottom: 10px;
       }
 
-      /* Notes Screen */
-      #notesScreen {
-        position: fixed;
-        top: 0;
-        left: -295px; /* Fully hidden off-screen */
-        width: 250px;
-        height: 100%;
-        background: white;
-        padding: 20px;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-        transition: left 0.3s ease; /* Smooth sliding effect */
-        z-index: 1001; /* Ensure it appears above other elements */
-      }
-
-      #notesScreen h2 {
-        margin-top: 0;
-      }
-
-      #notesScreen ul {
-        list-style: none;
-        padding: 0;
-      }
-
-      #notesScreen ul li {
-        margin: 15px 0;
-      }
-
-      #closeNotesButton {
-        background: #0079c1;
-        color: white;
-        border: none;
-        padding: 10px;
-        border-radius: 5px;
-        cursor: pointer;
-        margin-bottom: 20px;
-      }
-
       /* Style the popup's main container */
       .esri-popup__main-container {
         border-radius: 10px !important; /* Round the corners */
@@ -274,7 +237,9 @@
       <div id="menuContent">
         <button id="closeMenuButton">Close</button>
         <ul>
-          <li><a href="#notes">Notes</a></li>
+          <li><a href="#bookmarks">Bookmarks</a></li>
+          <li><a href="#previouslyVisited">Previously Visited</a></li>
+          <li><a href="#communityFeed">Community Feed</a></li> <!-- New Community Feed link -->
         </ul>
       </div>
     </div>
@@ -298,13 +263,6 @@
       <button id="closeCommunityFeedButton">Back</button>
       <h2>Community Feed</h2>
       <ul id="communityFeedList"></ul> <!-- List to display community posts -->
-    </div>
-
-    <!-- Notes Screen -->
-    <div id="notesScreen">
-      <button id="closeNotesButton">Back</button>
-      <h2>Notes</h2>
-      <ul id="notesList"></ul> <!-- List to display notes -->
     </div>
 
     <!-- Div element to hold the map view -->
@@ -422,38 +380,6 @@
         });
       }
 
-      // Array to store notes
-      let notes = [];
-
-      // Function to load notes from localStorage
-      function loadNotes() {
-        const savedNotes = localStorage.getItem("notes");
-        if (savedNotes) {
-          notes = JSON.parse(savedNotes); // Parse the saved JSON string into an array
-          updateNotesList(); // Update the notes list in the UI
-        }
-      }
-
-      // Function to save notes to localStorage
-      function saveNotes() {
-        localStorage.setItem("notes", JSON.stringify(notes)); // Convert the array to a JSON string
-      }
-
-      // Function to update the notes list in the UI
-      function updateNotesList() {
-        const notesList = document.getElementById("notesList");
-        notesList.innerHTML = ""; // Clear the list
-
-        notes.forEach((note) => {
-          const listItem = document.createElement("li");
-          listItem.innerHTML = `
-            <strong>${note.parkName}</strong><br>
-            ${note.message}
-          `;
-          notesList.appendChild(listItem);
-        });
-      }
-
       // Get references to the bookmarks screen and its close button
       const bookmarksScreen = document.getElementById("bookmarksScreen");
       const closeBookmarksButton = document.getElementById("closeBookmarksButton");
@@ -502,22 +428,6 @@
         menuContent.style.left = "0px"; // Show the burger menu
       }
 
-      // Get references to the Notes screen and its buttons
-      const notesScreen = document.getElementById("notesScreen");
-      const closeNotesButton = document.getElementById("closeNotesButton");
-
-      // Function to open the Notes screen
-      function openNotesScreen() {
-        notesScreen.style.left = "0"; // Slide in the Notes screen
-        menuContent.style.left = "-295px"; // Hide the burger menu
-      }
-
-      // Function to close the Notes screen and return to the burger menu
-      function closeNotesScreen() {
-        notesScreen.style.left = "-295px"; // Slide out the Notes screen
-        menuContent.style.left = "0px"; // Show the burger menu
-      }
-
       // Attach event listener to the "Bookmarks" link in the burger menu
       document.querySelector('a[href="#bookmarks"]').addEventListener("click", (e) => {
         e.preventDefault(); // Prevent default link behavior
@@ -544,15 +454,6 @@
 
       // Attach event listener to the close button in the Community Feed screen
       closeCommunityFeedButton.addEventListener("click", closeCommunityFeedScreen);
-
-      // Attach event listener to the "Notes" link in the burger menu
-      document.querySelector('a[href="#notes"]').addEventListener("click", (e) => {
-        e.preventDefault(); // Prevent default link behavior
-        openNotesScreen(); // Open the Notes screen
-      });
-
-      // Attach event listener to the close button in the Notes screen
-      closeNotesButton.addEventListener("click", closeNotesScreen);
 
       // Load ArcGIS modules
       let parksLayer; // Declare globally
@@ -675,9 +576,6 @@
 
         // Load community posts from localStorage when the app starts
         loadCommunityPosts();
-
-        // Load notes from localStorage when the app starts
-        loadNotes();
         
         // Update the renderer to reflect the saved lists
         updateRenderer();
@@ -792,38 +690,29 @@
 
         // Create the text box for user input
         const inputBox = document.createElement("textarea");
-        inputBox.placeholder = "Write a note about this park...";
+        inputBox.placeholder = "Visited before? Let others know how it went!";
         inputBox.style.width = "100%";
         inputBox.style.height = "60px";
         inputBox.style.marginBottom = "10px";
         inputBox.style.padding = "5px";
 
-        // Create the "Save Note" button
-        const saveNoteButton = document.createElement("button");
-        saveNoteButton.textContent = "Save Note";
-        saveNoteButton.style.background = "#0079c1";
-        saveNoteButton.style.color = "white";
-        saveNoteButton.style.border = "none";
-        saveNoteButton.style.padding = "5px 10px";
-        saveNoteButton.style.borderRadius = "5px";
-        saveNoteButton.style.cursor = "pointer";
+        // Create the "Save to Community Feed" button
+        const saveButton = document.createElement("button");
+        saveButton.textContent = "Save to Community Feed";
+        saveButton.style.background = "#0079c1";
+        saveButton.style.color = "white";
+        saveButton.style.border = "none";
+        saveButton.style.padding = "5px 10px";
+        saveButton.style.borderRadius = "5px";
+        saveButton.style.cursor = "pointer";
 
-        saveNoteButton.addEventListener("click", () => {
+        saveButton.addEventListener("click", () => {
           const message = inputBox.value.trim();
           if (message) {
-            const note = {
-              parkName: attributes.NAME,
-              message: message,
-            };
-
-            // Add the note to the list
-            notes.push(note);
-            saveNotes(); // Save the updated notes to localStorage
-            alert(`Note saved for ${note.parkName}`);
+            submitToSurvey123(attributes.NAME, message); // Submit to Survey123
             inputBox.value = ""; // Clear the input box
-            updateNotesList(); // Update the notes list in the menu
           } else {
-            alert("Please write a note before saving.");
+            alert("Please write a message before saving.");
           }
         });
 
@@ -831,13 +720,50 @@
         container.appendChild(bookmarkButton);
         container.appendChild(visitedButton);
         container.appendChild(inputBox);
-        container.appendChild(saveNoteButton);
+        container.appendChild(saveButton);
 
         return container;
       }
 
-      // Load notes from localStorage when the app starts
-      loadNotes();
+      // Function to submit data to Survey123 and update the Community Feed
+      function submitToSurvey123(parkName, message) {
+        require(["esri/request"], (esriRequest) => {
+          const survey123Url =
+            "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer/0/addFeatures";
+      
+          const surveyData = {
+            features: [
+              {
+                attributes: {
+                  park_name: parkName,
+                  message: message,
+                },
+              },
+            ],
+          };
+      
+          esriRequest(survey123Url, {
+            method: "post",
+            query: {
+              f: "json", // Ensure the response is in JSON format
+            },
+            body: surveyData,
+          })
+            .then((response) => {
+              if (response.data.addResults && response.data.addResults[0].success) {
+                alert(`Message saved for ${parkName}`);
+                loadCommunityPosts(); // Reload the Community Feed
+              } else {
+                console.error("Failed to submit data to Survey123:", response);
+                alert("Failed to save the message. Please try again.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error submitting data to Survey123:", error);
+              alert("An error occurred while saving the message.");
+            });
+        });
+      }
     </script>
   </body>
 </html>
