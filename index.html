@@ -21,11 +21,32 @@
       #burgerMenu {
         position: absolute;
         top: 90px; 
-        left: 10px;
+        left: 15px; /* Shifted 5px to the right */
         z-index: 1000;
       }
 
-      #menuButton, #closeMenuButton {
+      #menuButton {
+        width: 33px; /* Smaller size */
+        height: 33px; /* Smaller size */
+        background: white; /* White background */
+        border: 1px solid #ccc; /* Optional border for better visibility */
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        padding: 5px; /* Add padding for spacing */
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Optional shadow for better appearance */
+      }
+
+      #menuButton div {
+        width: 80%; /* Smaller width relative to the button */
+        height: 1.5px; /* Thinner lines */
+        background-color: #555; /* Dark gray color for the lines */
+        border-radius: 0; /* Remove rounded corners */
+      }
+
+      #closeMenuButton {
         background: #0079c1;
         color: white;
         border: none;
@@ -123,7 +144,11 @@
   <body>
     <!-- Burger Menu -->
     <div id="burgerMenu">
-      <button id="menuButton">☰ Menu</button>
+      <button id="menuButton">
+        <div></div>
+        <div></div>
+        <div></div>
+      </button>
       <div id="menuContent">
         <button id="closeMenuButton">Close</button>
         <ul>
