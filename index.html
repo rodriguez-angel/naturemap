@@ -483,8 +483,9 @@
         "esri/widgets/Locate", 
         "esri/widgets/Search",
         "esri/widgets/Popup",
-        "esri/layers/FeatureLayer"
-      ], (esriConfig, Map, MapView, Locate, Search, Popup, FeatureLayer) => {
+        "esri/layers/FeatureLayer",
+        "esri/request"
+      ], (esriConfig, Map, MapView, Locate, Search, Popup, FeatureLayer, esriRequest) => {
         
         // Set the API key for accessing ArcGIS services
         esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurMDO2Lvg3fqfK_WEnH5iFTMBraaeXiSHJGRbnr1Zs4Isr4QgtEWFLCgjEyJUqKPiF1twAE7x6mEbufhgGS8kDfdHZrm-MxCYabUC4R4l1qsZ41mzL6Or0hSE4dkXf_yST7bEx29lJkvmLZa5L6lxxauEogtg-aafqVSunqkSD9MFqBnsg6KGrMADv7SZEjDdrTjOkdGIkev0d6XLanocxs2I9M7C0otsi3fKjt2gtQYJAT1_mPb6eiGn";
@@ -514,7 +515,7 @@
         const popupParks = {
           title: "{NAME}", // Display the name of the park
           collapseEnabled: true, // Allow collapsing the popup
-          content: (feature) => createPopupContent(feature.graphic.attributes),
+          content: (feature) => createPopupContent(esriRequest, feature.graphic.attributes),
         };
 
         // Define a renderer for the parks layer
@@ -644,7 +645,7 @@
       }
 
       // Function to create the popup content
-      function createPopupContent(attributes) {
+      function createPopupContent(esriRequest, attributes) {
         const container = document.createElement("div");
 
         // Add the greenspace type and size
@@ -727,7 +728,7 @@
         saveButton.addEventListener("click", () => {
           const message = inputBox.value.trim();
           if (message) {
-            submitToSurvey123(attributes.NAME, message); // Submit to Survey123
+            submitToSurvey123(esriRequest, attributes.NAME, message); // Submit to Survey123
             inputBox.value = ""; // Clear the input box
           } else {
             alert("Please write a message before saving.");
@@ -744,46 +745,44 @@
       }
 
       // Function to submit data to Survey123 and update the Community Feed
-      function submitToSurvey123(parkName, message) {
-        require(["esri/request"], (esriRequest) => {
-          const survey123Url =
-            "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer/0/addFeatures";
-      
-          const surveyData = {
-            features: [
-              {
-                attributes: {
-                  park_name: parkName,
-                  message: message,
-                },
+      function submitToSurvey123(esriRequest, parkName, message) {
+        const survey123Url =
+          "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer/0/addFeatures";
+    
+        const surveyData = {
+          features: [
+            {
+              attributes: {
+                park_name: parkName,
+                message: message,
               },
-            ],
-          };
-      
-          esriRequest(survey123Url, {
-            method: "post",
-            query: {
-              f: "json", // Ensure the response is in JSON format
             },
-            body: surveyData,
+          ],
+        };
+    
+        esriRequest(survey123Url, {
+          method: "post",
+          query: {
+            f: "json", // Ensure the response is in JSON format
+          },
+          body: surveyData,
+        })
+          .then((response) => {
+            if (response.data.addResults && response.data.addResults[0].success) {
+              alert(`Message saved for ${parkName}`);
+              // Add the message to the Community Feed
+              communityPosts.push(`${parkName}: ${message}`);
+              saveCommunityPosts(); // Save the updated posts to localStorage
+              updateCommunityFeedList(); // Update the Community Feed
+            } else {
+              console.error("Failed to submit data to Survey123:", response);
+              alert("Failed to save the message. Please try again.");
+            }
           })
-            .then((response) => {
-              if (response.data.addResults && response.data.addResults[0].success) {
-                alert(`Message saved for ${parkName}`);
-                // Add the message to the Community Feed
-                communityPosts.push(`${parkName}: ${message}`);
-                saveCommunityPosts(); // Save the updated posts to localStorage
-                updateCommunityFeedList(); // Update the Community Feed
-              } else {
-                console.error("Failed to submit data to Survey123:", response);
-                alert("Failed to save the message. Please try again.");
-              }
-            })
-            .catch((error) => {
-              console.error("Error submitting data to Survey123:", error);
-              alert("An error occurred while saving the message.");
-            });
-        });
+          .catch((error) => {
+            console.error("Error submitting data to Survey123:", error);
+            alert("An error occurred while saving the message.");
+          });
       }
     </script>
   </body>
