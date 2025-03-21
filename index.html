@@ -525,6 +525,24 @@
               notesInput.value = savedNotes;
             }
 
+            // Create the "Save Notes" button
+            const saveNotesButton = document.createElement("button");
+            saveNotesButton.textContent = "Save Notes";
+            saveNotesButton.style.marginTop = "10px";
+            saveNotesButton.style.background = "#0079c1"; // Blue color
+            saveNotesButton.style.color = "white";
+            saveNotesButton.style.border = "none";
+            saveNotesButton.style.padding = "5px 10px";
+            saveNotesButton.style.borderRadius = "5px";
+            saveNotesButton.style.cursor = "pointer";
+
+            // Save notes to localStorage when the button is clicked
+            saveNotesButton.addEventListener("click", () => {
+              const notes = notesInput.value;
+              localStorage.setItem(`notes_${attributes.NAME}`, notes); // Save notes with the park's NAME as the key
+              alert(`Notes saved for ${attributes.NAME}`);
+            });
+
             // Save notes to localStorage when the user leaves the text box
             notesInput.addEventListener("blur", () => {
               const notes = notesInput.value;
@@ -537,7 +555,7 @@
             // Append the buttons to the container
             container.appendChild(bookmarkButton);
             container.appendChild(visitedButton);
-
+            container.appendChild(saveNotesButton);
             return container; // Return the container as the popup content
           },
         };
