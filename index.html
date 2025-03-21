@@ -746,41 +746,43 @@
       }
 
       // Function to submit data to Survey123 and update the Community Feed
-      async function submitToSurvey123(parkName, message) {
-        const survey123Url =
-          "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer/0/addFeatures";
-        const surveyData = {
-          features: [
-            {
-              attributes: {
-                park_name: parkName,
-                message: message,
+      function submitToSurvey123(parkName, message) {
+        require(["esri/request"], (esriRequest) => {
+          const survey123Url =
+            "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/survey123_e09c526bb95d42d6b85d4ad6e63360b0_results/FeatureServer/0/addFeatures";
+      
+          const surveyData = {
+            features: [
+              {
+                attributes: {
+                  park_name: parkName,
+                  message: message,
+                },
               },
+            ],
+          };
+      
+          esriRequest(survey123Url, {
+            method: "post",
+            query: {
+              f: "json", // Ensure the response is in JSON format
             },
-          ],
-        };
-
-        try {
-          const response = await fetch(survey123Url, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(surveyData),
-          });
-
-          const result = await response.json();
-          if (result.addResults && result.addResults[0].success) {
-            alert(`Message saved for ${parkName}`);
-            loadCommunityPosts(); // Reload the Community Feed
-          } else {
-            console.error("Failed to submit data to Survey123:", result);
-            alert("Failed to save the message. Please try again.");
-          }
-        } catch (error) {
-          console.error("Error submitting data to Survey123:", error);
-          alert("An error occurred while saving the message.");
-        }
+            body: surveyData,
+          })
+            .then((response) => {
+              if (response.data.addResults && response.data.addResults[0].success) {
+                alert(`Message saved for ${parkName}`);
+                loadCommunityPosts(); // Reload the Community Feed
+              } else {
+                console.error("Failed to submit data to Survey123:", response);
+                alert("Failed to save the message. Please try again.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error submitting data to Survey123:", error);
+              alert("An error occurred while saving the message.");
+            });
+        });
       }
     </script>
   </body>
