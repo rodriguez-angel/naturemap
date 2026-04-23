@@ -513,7 +513,7 @@
 
         // Create a feature layer for parks (polygon layer)
         parksLayer = new FeatureLayer({
-          url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/USA_Parks/FeatureServer", // URL to the parks feature service
+          url: "https://services.arcgis.com/LBbVDC0hKPAnLRpO/arcgis/rest/services/My_Serviced_USA_Parks/FeatureServer", // URL to the parks feature service
           outFields: ["*"], // Retrieve all fields for use in pop-ups or filtering
           popupTemplate: popupParks, // Apply the popup template
           renderer: parksRenderer // Apply the renderer to the parks layer
