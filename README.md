@@ -1,3 +1,4 @@
+# (Out of commission due to expired API key)
 # NatureMap by Angel Rodriguez
 
 You can view the webpage I created at `https://rodriguez-angel.github.io/naturemap/`.
@@ -10,6 +11,10 @@ By allowing users to track and organize their visits, NatureMap promotes stronge
 
 # Data Used
 
-USA Parks layer package hosted by Esri: `https://www.arcgis.com/home/item.html?id=578968f975774d3fab79fe56c8c90941`
+USA Parks layer package hosted by Esri: `https://www.arcgis.com/home/item.html?id=578968f975774d3fab79fe56c8c90941` (Deprecated)
 
-My hosting: `https://ufl.maps.arcgis.com/home/item.html?id=a088d6c3105849c99b79aca0c6a4906c`
+My hosting: `https://ufl.maps.arcgis.com/home/item.html?id=a088d6c3105849c99b79aca0c6a4906c` (Deprecated)
+
+USA Parks layer package hosted by Esri: `https://ufl.maps.arcgis.com/home/item.html?id=e49e181ac82c46edac3ae601ebb3ef2d` (Updated)
+
+My hosting: `https://ufl.maps.arcgis.com/home/item.html?id=b40efaaa1e344fcab05807f2aa885f7b` (Updated)
